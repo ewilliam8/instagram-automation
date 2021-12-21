@@ -1,4 +1,6 @@
 __pycache__/
 FILTER/
 PARSE/
+.vscode/
 geckodriver.log
+.env
