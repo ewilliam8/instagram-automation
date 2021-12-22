@@ -36,6 +36,17 @@ def check_user(username,
             print(f"× The user has a name with: {skip_word}")
             return None
 
+    # check with already interacted users
+    interacted_users = open(INTERACTED_FILE,
+                            'r', encoding='UTF-8').readlines()
+    for index, elem in enumerate(interacted_users, start=0):
+        interacted_users[index] = elem[:-1]
+
+    if username in interacted_users:
+        print(f"× The user has been already interacted")
+        return None
+
+    # --- SERVER CALL ---
     url = f'https://www.instagram.com/{username}/'
     headers = {'user-agent': 'Chrome/62.0.3202.84'}
     r = requests.get(url, headers=headers)
@@ -161,7 +172,7 @@ for gi in range(0, to_filter):
                                           skip_bio_keyword,
                                           person_categories,
                                           False)
-        except 404:
+        except Exception as ex:
             print("An exception occurred")
 
         if local_check_user is not None:

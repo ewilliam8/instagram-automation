@@ -34,6 +34,10 @@ with smart_run(session):
     with open(file, 'w', encoding='UTF-8') as F:
         F.writelines(f)
 
+    with open(INTERACTED_FILE, 'a', encoding='UTF-8') as f:
+        for el in target_followers:
+            f.write(el + "\n")
+
     # взаимодействие: лайкинг и просмотр сториз
     session.set_dont_include(exclude_accaunts)
     session.set_mandatory_language(enabled=True,

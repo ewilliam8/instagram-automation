@@ -7,6 +7,7 @@ if os.path.exists(dotenv_path):
 
 FILTER_FOLDER = "FILTER/"
 PARSE_FOLDER = "PARSE/"
+INTERACTED_FILE = "interacted.txt"
 
 account = os.getenv("TARGET_ACCOUNT")
 target_accaunts = [account]

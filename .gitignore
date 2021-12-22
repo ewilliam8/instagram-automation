@@ -4,3 +4,5 @@ PARSE/
 .vscode/
 geckodriver.log
 .env
+test.py
+interacted.txt

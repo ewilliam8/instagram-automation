@@ -20,12 +20,16 @@ with smart_run(session):
     target_followers = []
     file = FILTER_FOLDER + account + "_filtered.txt"
     f = open(file).readlines()
-    for i in range(0, 35):
+    for i in range(0, 8):
         user = f.pop(0).replace('\n', '')
         target_followers.append(user)
 
     with open(file, 'w', encoding='UTF-8') as F:
         F.writelines(f)
+
+    with open(INTERACTED_FILE, 'a', encoding='UTF-8') as f:
+        for el in target_followers:
+            f.write(el + "\n")
 
     session.set_dont_include(exclude_accaunts)
     session.set_mandatory_language(enabled=True, character_set=['LATIN',

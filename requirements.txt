@@ -1,0 +1,4 @@
+instapy==0.6.14
+dotenv
+requests
+bs4
