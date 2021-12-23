@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 from config import *
 
 
-to_filter = 25  # * 10
+to_filter = 20  # * 10
 
 
 def check_user(username,
@@ -14,11 +14,11 @@ def check_user(username,
                skip_private=True
                ):
 
-    min_followers = 50,
-    max_followers = 10000,
-    min_following = 50,
-    max_following = 10000,
-    min_posts = 1,
+    min_followers = 50
+    max_followers = 10000
+    min_following = 50
+    max_following = 10000
+    min_posts = 1
     max_posts = 2000
 
     def find_nth(haystack, needle, n):
@@ -187,6 +187,6 @@ for gi in range(0, to_filter):
         for el in filtered_accounts:
             f.write(el + "\n")
 
-    print(f"\n~~ Users checked [{gi + 1}/{to_filter}]")
-    print("~~ Sleeping between 2 and 5 minutes")
+    print(f"\n~~ Users checked [{(gi + 1) * 10}/{to_filter * 10}]")
+    print("~~ Sleeping between 1 and 5 minutes")
     time.sleep(random.randint(60, 300))

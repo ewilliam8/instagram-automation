@@ -8,6 +8,7 @@ if os.path.exists(dotenv_path):
 FILTER_FOLDER = "FILTER/"
 PARSE_FOLDER = "PARSE/"
 INTERACTED_FILE = "interacted.txt"
+MANAGER_FILE = "manager.json"
 
 account = os.getenv("TARGET_ACCOUNT")
 target_accaunts = [account]
@@ -54,7 +55,8 @@ skip_bio_keyword = [
     "НАБИРАЮ КОМАНДУ", "Научу зарабатывать", "дайрект", "нумеролог",
     "чакролог", "матрицу судьбы", "формулу души", "кармическую нумерологию",
     "Косметика", "косметика", "КОСМЕТИКА", "таргет", "Таргет", "ТАРГЕТ",
-    "Гарантия", "гарантия", "ГАРАНТИЯ"]
+    "Гарантия", "гарантия", "ГАРАНТИЯ", "game studio", "1С-программирование",
+    "проектирование", "СКУД"]
 
 person_categories = [
     "Architectural Designer", "Artist", "Athlete", "Creators & Celebrities",

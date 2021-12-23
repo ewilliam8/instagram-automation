@@ -20,7 +20,7 @@ with smart_run(session):
     target_followers = []
     file = FILTER_FOLDER + account + "_filtered.txt"
     f = open(file).readlines()
-    for i in range(0, 8):
+    for i in range(0, 35):
         user = f.pop(0).replace('\n', '')
         target_followers.append(user)
 

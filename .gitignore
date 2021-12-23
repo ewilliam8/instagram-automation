@@ -6,3 +6,4 @@ geckodriver.log
 .env
 test.py
 interacted.txt
+manager.json
