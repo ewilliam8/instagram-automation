@@ -5,9 +5,6 @@ from bs4 import BeautifulSoup
 from config import *
 
 
-to_filter = 20  # * 10
-
-
 def check_user(username,
                skip_words=[],
                non_skip_business_categories=[],
@@ -150,43 +147,52 @@ def check_user(username,
     return username
 
 
-for gi in range(0, to_filter):
+def filter_base(to_filter=25):
+    for gi in range(0, to_filter):
 
-    accounts_to_check = []
-    with open(PARSE_FOLDER + account + '_followers.txt',
-              'r', encoding='UTF-8') as f:
-        userslist = f.readlines()
-        for i in range(0, 10):
-            user = userslist.pop(0).replace('\n', '')
-            accounts_to_check.append(user)
+        accounts_to_check = []
+        exception_occurred = 0
         with open(PARSE_FOLDER + account + '_followers.txt',
-                  'w', encoding='UTF-8') as F:
-            F.writelines(userslist)
+                  'r', encoding='UTF-8') as f:
+            userslist = f.readlines()
+            for _ in range(0, 10):
+                user = userslist.pop(0).replace('\n', '')
+                accounts_to_check.append(user)
+            with open(PARSE_FOLDER + account + '_followers.txt',
+                      'w', encoding='UTF-8') as F:
+                F.writelines(userslist)
 
-    filtered_accounts = []
-    for username in accounts_to_check:
+        filtered_accounts = []
+        for username in accounts_to_check:
 
-        local_check_user = None
-        try:
-            local_check_user = check_user(username,
-                                          skip_bio_keyword,
-                                          person_categories,
-                                          False)
-        except Exception as ex:
-            print("An exception occurred")
+            local_check_user = None
+            try:
+                local_check_user = check_user(username,
+                                              skip_bio_keyword,
+                                              person_categories,
+                                              False)
+            except Exception as ex:
+                exception_occurred += 1
+                print("An exception occurred")
 
-        if local_check_user is not None:
-            filtered_accounts.append(local_check_user)
-            print(filtered_accounts)
+                if exception_occurred >= 5:
+                    print("\n\nSome problems with Instagram!\n")
+                    print("Close the program\n")
+                    input()
+                    break
 
-        time.sleep(random.randint(1, 5))
+            if local_check_user is not None:
+                filtered_accounts.append(local_check_user)
+                print(filtered_accounts)
 
-    with open(FILTER_FOLDER + account + '_filtered.txt',
-              'a', encoding='UTF-8') as f:
+            time.sleep(random.randint(1, 5))
 
-        for el in filtered_accounts:
-            f.write(el + "\n")
+        with open(FILTER_FOLDER + account + '_filtered.txt',
+                  'a', encoding='UTF-8') as f:
 
-    print(f"\n~~ Users checked [{(gi + 1) * 10}/{to_filter * 10}]")
-    print("~~ Sleeping between 1 and 5 minutes")
-    time.sleep(random.randint(60, 300))
+            for el in filtered_accounts:
+                f.write(el + "\n")
+
+        print(f"\n~~ Users checked [{(gi + 1) * 10}/{to_filter * 10}]")
+        print("~~ Sleeping between 1 and 5 minutes")
+        time.sleep(random.randint(60, 300))

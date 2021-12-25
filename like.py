@@ -11,8 +11,9 @@ if os.path.exists(dotenv_path):
 
 session = InstaPy(username=os.getenv("INSTA_USERNAME"),
                   password=os.getenv("INSTA_PASSWORD"),
-                  headless_browser=False,
-                  bypass_security_challenge_using='sms')
+                  headless_browser=os.getenv("HEADLESS_BROWSER"),
+                  bypass_security_challenge_using='sms',
+                  want_check_browser=True)
 
 
 # слияние списков
