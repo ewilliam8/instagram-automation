@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 from os import path
 from config import *
@@ -8,8 +9,7 @@ from dotenv import load_dotenv
 here = path.abspath(path.dirname(__file__))
 
 dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
-if os.path.exists(dotenv_path):
-    load_dotenv(dotenv_path)
+interacted_file_path = os.path.join(os.path.dirname(__file__), INTERACTED_FILE)
 
 
 def readall(*args):
@@ -17,18 +17,31 @@ def readall(*args):
         return fp.read()
 
 
-# проверка на папки FILTER и PARSE
+# доделать сравнение версий с минимальной версией 3.10
+if not sys.version_info.major and sys.version_info.minor:
+
+    print("Python 3.9.7 or higher is required.")
+    print("You are using Python {}.{}.{}".format(sys.version_info.major,
+                                                 sys.version_info.minor,
+                                                 sys.version_info.micro))
+    sys.exit(1)
+
+if os.path.exists(dotenv_path):
+    load_dotenv(dotenv_path)
+
+if not os.path.exists(interacted_file_path):
+    open(INTERACTED_FILE, "w", encoding='UTF-8').close()
 if not os.path.isdir(PARSE_FOLDER):
     os.mkdir(PARSE_FOLDER)
 if not os.path.isdir(FILTER_FOLDER):
     os.mkdir(FILTER_FOLDER)
 
-open(INTERACTED_FILE, "w", encoding='UTF-8').close()
+
 with open(MANAGER_FILE, "w", encoding='UTF-8') as file_manager:
     data = {
         os.getenv("INSTA_USERNAME"): {
             "donor_accounts": [],
-            
+
         }
     }
     json.dump(data, file_manager)

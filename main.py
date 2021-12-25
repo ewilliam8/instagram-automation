@@ -1,15 +1,18 @@
 # import os
 # from config import *
 import datetime
+import unfollow
+import config
 import filter
 import follow
 import feed
+import sys
 
 
 # TODO
 # Autostart the program
 # UI
-# Код для работы на 28 дней
+# Код для работы на 28 дней +-
 # Проверить прокси
 
 
@@ -24,7 +27,8 @@ def day_type_two():
 
 
 def day_type_three():
-    print("Полный отдых")
+    print("Отписка")
+    unfollow.unfollow()
 
 
 def day_type_four():
@@ -33,10 +37,24 @@ def day_type_four():
 
 
 if __name__ == "__main__":
+
     time_now = datetime.datetime.now()
-    # time_now = datetime.datetime(2019, 8, 9)
     day_of_month = time_now.strftime("%d")
-    print(day_of_month)
+    time_stop = datetime.datetime(2022, 1, 26)
+    today_date = time_now.strftime("%d/%m/%Y").replace("/", ".")
+
+    if time_now < time_stop:
+        delta_str = str(time_stop - time_now).replace("day,", "день,") \
+                                             .replace("days,", "дней,")
+        delta_str = delta_str[:delta_str.find(".")]
+        print("Автоматизация Инстаграм")
+        print("Версия: " + config.PROGRAM_VERSION)
+        print("Сегодня: " + time_now, end='')
+        print(". У Вас осталось оплаченного времени: " + delta_str)
+    else:
+        print("У вас не осталось оплаченных дней")
+        input("Закройте программу")
+        sys.exit(1)
 
     if day_of_month == "01" or \
        day_of_month == "20" or \

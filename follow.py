@@ -8,11 +8,17 @@ dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
 if os.path.exists(dotenv_path):
     load_dotenv(dotenv_path)
 
+if os.getenv("HEADLESS_BROWSER") == "True":
+    hb = True
+elif os.getenv("HEADLESS_BROWSER") == "False":
+    hb = False
+else:
+    hb = False
 
 session = InstaPy(username=os.getenv("INSTA_USERNAME"),
                   password=os.getenv("INSTA_PASSWORD"),
-                  headless_browser=os.getenv("HEADLESS_BROWSER"),
                   bypass_security_challenge_using='sms',
+                  headless_browser=hb,
                   want_check_browser=True)
 
 
@@ -84,3 +90,8 @@ def follow():
         session.set_do_like(True, percentage=55)
         session.follow_by_list(followlist=target_followers, times=1,
                                sleep_delay=600, interact=False)
+        session.end(threaded_session=True)
+
+
+if __name__ == "__main__":
+    follow()

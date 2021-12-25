@@ -1,12 +1,12 @@
-import requests
+import sys
 import time
 import random
-from bs4 import BeautifulSoup
+import requests
 from config import *
+from bs4 import BeautifulSoup
 
 
-def check_user(username,
-               skip_words=[],
+def check_user(username, skip_words=[],
                non_skip_business_categories=[],
                skip_private=True
                ):
@@ -147,7 +147,7 @@ def check_user(username,
     return username
 
 
-def filter_base(to_filter=25):
+def filter_base(to_filter=9):
     for gi in range(0, to_filter):
 
         accounts_to_check = []
@@ -178,7 +178,7 @@ def filter_base(to_filter=25):
                 if exception_occurred >= 5:
                     print("\n\nSome problems with Instagram!\n")
                     print("Close the program\n")
-                    input()
+                    sys.exit(1)
                     break
 
             if local_check_user is not None:
@@ -196,3 +196,7 @@ def filter_base(to_filter=25):
         print(f"\n~~ Users checked [{(gi + 1) * 10}/{to_filter * 10}]")
         print("~~ Sleeping between 1 and 5 minutes")
         time.sleep(random.randint(60, 300))
+
+
+if __name__ == "__main__":
+    filter_base()
