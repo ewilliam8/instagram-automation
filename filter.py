@@ -1,4 +1,3 @@
-import sys
 import time
 import random
 import requests
@@ -178,8 +177,7 @@ def filter_base(to_filter=9):
                 if exception_occurred >= 5:
                     print("\n\nSome problems with Instagram!\n")
                     print("Close the program\n")
-                    sys.exit(1)
-                    break
+                    exit()
 
             if local_check_user is not None:
                 filtered_accounts.append(local_check_user)
@@ -194,8 +192,9 @@ def filter_base(to_filter=9):
                 f.write(el + "\n")
 
         print(f"\n~~ Users checked [{(gi + 1) * 10}/{to_filter * 10}]")
-        print("~~ Sleeping between 1 and 5 minutes")
-        time.sleep(random.randint(60, 300))
+        if (gi + 1) != to_filter:
+            print("~~ Sleeping between 1 and 5 minutes")
+            time.sleep(random.randint(60, 300))
 
 
 if __name__ == "__main__":

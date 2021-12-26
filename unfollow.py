@@ -1,21 +1,8 @@
-import os
-from config import *
 from instapy import InstaPy
 from instapy import smart_run
-from dotenv import load_dotenv
-
-dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
-if os.path.exists(dotenv_path):
-    load_dotenv(dotenv_path)
-
-session = InstaPy(username=os.getenv("INSTA_USERNAME"),
-                  password=os.getenv("INSTA_PASSWORD"),
-                  headless_browser=bool(os.getenv("HEADLESS_BROWSER")),
-                  bypass_security_challenge_using='sms',
-                  want_check_browser=True)
 
 
-def unfollow():
+def unfollow(session):
     with smart_run(session):
 
         session.set_quota_supervisor(enabled=True,
@@ -39,4 +26,19 @@ def unfollow():
 
 
 if __name__ == "__main__":
-    unfollow()
+
+    import os
+    import config
+    from dotenv import load_dotenv
+
+    dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+    if os.path.exists(dotenv_path):
+        load_dotenv(dotenv_path)
+
+    session = InstaPy(username=os.getenv("INSTA_USERNAME"),
+                      password=os.getenv("INSTA_PASSWORD"),
+                      headless_browser=config.HEADLESS_BROWSER_BOOL,
+                      bypass_security_challenge_using='sms',
+                      want_check_browser=True)
+
+    unfollow(session)

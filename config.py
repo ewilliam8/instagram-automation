@@ -1,11 +1,20 @@
 import os
 from dotenv import load_dotenv
 
-PROGRAM_VERSION = '1.1'
+PROGRAM_VERSION = '1.2'
 
 dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
 if os.path.exists(dotenv_path):
     load_dotenv(dotenv_path)
+
+
+if os.getenv("HEADLESS_BROWSER") == "True":
+    HEADLESS_BROWSER_BOOL = True
+elif os.getenv("HEADLESS_BROWSER") == "False":
+    HEADLESS_BROWSER_BOOL = False
+else:
+    HEADLESS_BROWSER_BOOL = False
+
 
 FILTER_FOLDER = "FILTER/"
 PARSE_FOLDER = "PARSE/"
@@ -28,7 +37,7 @@ skip_name_keywords = [
     "sintepuh", "shapki", "_club", "pitomniki", "store", "avon", "dedmoroz",
     "khlopok", "vinyl", "photo", "narashivanie", "volos", "cindy",
     "bizhyteriya", "massage", "dietolog", "hlopok", "news", "dress", "recepti",
-    "tekstile", "_nails"]
+    "tekstile", "_nails", "_studio"]
 
 # "www.", "https",
 skip_bio_keyword = [

@@ -1,45 +1,24 @@
-import os
-from config import *
-from instapy import InstaPy
+import config
 from instapy import smart_run
-from dotenv import load_dotenv
-
-dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
-if os.path.exists(dotenv_path):
-    load_dotenv(dotenv_path)
-
-if os.getenv("HEADLESS_BROWSER") == "True":
-    hb = True
-elif os.getenv("HEADLESS_BROWSER") == "False":
-    hb = False
-else:
-    hb = False
-
-session = InstaPy(username=os.getenv("INSTA_USERNAME"),
-                  password=os.getenv("INSTA_PASSWORD"),
-                  bypass_security_challenge_using='sms',
-                  headless_browser=hb,
-                  want_check_browser=True)
 
 
-def follow():
-
+def follow(session):
     with smart_run(session):
         target_followers = []
-        file = FILTER_FOLDER + account + "_filtered.txt"
+        file = config.FILTER_FOLDER + config.account + "_filtered.txt"
         f = open(file).readlines()
-        for i in range(0, 25):
+        for _ in range(0, 25):
             user = f.pop(0).replace('\n', '')
             target_followers.append(user)
 
         with open(file, 'w', encoding='UTF-8') as F:
             F.writelines(f)
 
-        with open(INTERACTED_FILE, 'a', encoding='UTF-8') as f:
+        with open(config.INTERACTED_FILE, 'a', encoding='UTF-8') as f:
             for el in target_followers:
                 f.write(el + "\n")
 
-        session.set_dont_include(exclude_accaunts)
+        session.set_dont_include(config.exclude_accaunts)
         session.set_mandatory_language(enabled=True,
                                        character_set=['LATIN', 'CYRILLIC'])
         session.set_simulation(enabled=True, percentage=66)
@@ -51,8 +30,9 @@ def follow():
                                skip_non_business=False,
                                business_percentage=100,
                                skip_business_categories=[],
-                               dont_skip_business_categories=person_categories,
-                               skip_bio_keyword=skip_bio_keyword,
+                               dont_skip_business_categories=config.
+                               person_categories,
+                               skip_bio_keyword=config.skip_bio_keyword,
                                mandatory_bio_keywords=[])
         session.set_relationship_bounds(enabled=True,
                                         # potency_ratio=1.34,
@@ -94,4 +74,19 @@ def follow():
 
 
 if __name__ == "__main__":
-    follow()
+
+    import os
+    from instapy import InstaPy
+    from dotenv import load_dotenv
+
+    dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+    if os.path.exists(dotenv_path):
+        load_dotenv(dotenv_path)
+
+    session = InstaPy(username=os.getenv("INSTA_USERNAME"),
+                      password=os.getenv("INSTA_PASSWORD"),
+                      headless_browser=config.HEADLESS_BROWSER_BOOL,
+                      bypass_security_challenge_using='sms',
+                      want_check_browser=True)
+
+    follow(session)
