@@ -41,6 +41,7 @@ with open(MANAGER_FILE, "w", encoding='UTF-8') as file_manager:
     data = {
         os.getenv("INSTA_USERNAME"): {
             "donor_accounts": [],
+            "interacted_users": []
 
         }
     }

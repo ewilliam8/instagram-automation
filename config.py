@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 
-PROGRAM_VERSION = '1.2'
+PROGRAM_VERSION = '1.3'
 
 dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
 if os.path.exists(dotenv_path):
@@ -37,7 +37,7 @@ skip_name_keywords = [
     "sintepuh", "shapki", "_club", "pitomniki", "store", "avon", "dedmoroz",
     "khlopok", "vinyl", "photo", "narashivanie", "volos", "cindy",
     "bizhyteriya", "massage", "dietolog", "hlopok", "news", "dress", "recepti",
-    "tekstile", "_nails", "_studio"]
+    "tekstile", "_nails", "_studio", "uslugi"]
 
 # "www.", "https",
 skip_bio_keyword = [

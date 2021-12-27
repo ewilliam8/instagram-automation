@@ -24,6 +24,17 @@ def unfollow(session):
                                sleep_delay=501)
         session.end(threaded_session=True)
 
+# instapy_followed_enabled - отписываемся от пользователей, на которых
+#   были подписаны с помощью бота Instapy
+
+# session.unfollow_users(amount=60, instapy_followed_enabled=True,
+# instapy_followed_param="all", style="FIFO",
+# unfollow_after=90*60*60, sleep_delay=501)
+
+# session.unfollow_users(amount=60, instapy_followed_enabled=True,
+# instapy_followed_param="nonfollowers", style="FIFO",
+# unfollow_after=90*60*60, sleep_delay=501)
+
 
 if __name__ == "__main__":
 

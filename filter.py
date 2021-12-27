@@ -5,6 +5,19 @@ from config import *
 from bs4 import BeautifulSoup
 
 
+# Фильтрация только активной аудитории
+#   --> Последние лайки
+#   --> Последние Подписки
+#   --> Последние Комментарии
+
+# Создать список уже отфильтрованных людей, чтобы не фильтровать их еще раз
+
+# ОШИБКА фильтрации с: tanech_garik по ключевому слову "нумеролог"
+
+# proxy = {"http": "http://158.69.72.138:9300"}
+proxy = None
+
+
 def check_user(username, skip_words=[],
                non_skip_business_categories=[],
                skip_private=True
@@ -44,8 +57,12 @@ def check_user(username, skip_words=[],
 
     # --- SERVER CALL ---
     url = f'https://www.instagram.com/{username}/'
-    headers = {'user-agent': 'Chrome/62.0.3202.84'}
-    r = requests.get(url, headers=headers)
+    headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)\
+    AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36'}
+    if proxy is not None:
+        r = requests.get(url, headers=headers, proxies=proxy)
+    else:
+        r = requests.get(url, headers=headers, proxies=proxy)
 
     soup = BeautifulSoup(r.text, 'lxml')
     follows_name_posts = str(soup.find_all("meta")[13])
@@ -142,11 +159,11 @@ def check_user(username, skip_words=[],
             print(f"× User skipped by keyword in Bio: {word_to_print}")
             return None
 
-    print("✓ Added to a list")
+    print("+ Added to a list")
     return username
 
 
-def filter_base(to_filter=9):
+def filter_base(to_filter=25):
     for gi in range(0, to_filter):
 
         accounts_to_check = []

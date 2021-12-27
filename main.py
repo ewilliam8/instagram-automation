@@ -13,31 +13,32 @@ import os
 # Autostart the program
 # UI
 # Код для работы на 28 дней +-
-# Проверить прокси
+# Проверить прокси IPv4
 # Сделать функцию для создания session
 # like.py - разобраться с файлом
 # Модуль взаимодействия с новыми подписчиками:
 #   написать и предложить интересное предложение
 # Вести учет статистики подписок и подписчиков в manager.json
+# Сделать класс со всеми действиями
 
 
 def day_type_one(session):
-    print("Подписка")
+    print("Follow")
     follow.follow(session)
 
 
 def day_type_two():
-    print("Фильтрация")
+    print("Filtering a base")
     filter.filter_base()
 
 
 def day_type_three(session):
-    print("Отписка")
+    print("Unfollowing")
     unfollow.unfollow(session)
 
 
 def day_type_four(session):
-    print("Лайкинг новостей и просмотр сториз")
+    print("Liking feed")
     feed.feed_interact(session)
 
 

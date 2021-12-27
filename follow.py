@@ -7,7 +7,7 @@ def follow(session):
         target_followers = []
         file = config.FILTER_FOLDER + config.account + "_filtered.txt"
         f = open(file).readlines()
-        for _ in range(0, 25):
+        for _ in range(0, 10):
             user = f.pop(0).replace('\n', '')
             target_followers.append(user)
 
