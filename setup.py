@@ -24,7 +24,7 @@ if not sys.version_info.major and sys.version_info.minor:
     print("You are using Python {}.{}.{}".format(sys.version_info.major,
                                                  sys.version_info.minor,
                                                  sys.version_info.micro))
-    sys.exit(1)
+    exit()
 
 if os.path.exists(dotenv_path):
     load_dotenv(dotenv_path)
@@ -40,12 +40,14 @@ if not os.path.isdir(FILTER_FOLDER):
 with open(MANAGER_FILE, "w", encoding='UTF-8') as file_manager:
     data = {
         os.getenv("INSTA_USERNAME"): {
+            # "messaged": [],
             "donor_accounts": [],
-            "interacted_users": []
-
+            "interacted_users": [],
+            "actual_filtered": [],
+            "already_filtered": []
         }
     }
-    json.dump(data, file_manager)
+    json.dump(data, file_manager, indent=4)
 
 with open("requirements.txt") as f:
     dependencies = f.read().splitlines()

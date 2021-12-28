@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 
-PROGRAM_VERSION = '1.3'
+PROGRAM_VERSION = '1.4'
 
 dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
 if os.path.exists(dotenv_path):
@@ -37,7 +37,8 @@ skip_name_keywords = [
     "sintepuh", "shapki", "_club", "pitomniki", "store", "avon", "dedmoroz",
     "khlopok", "vinyl", "photo", "narashivanie", "volos", "cindy",
     "bizhyteriya", "massage", "dietolog", "hlopok", "news", "dress", "recepti",
-    "tekstile", "_nails", "_studio", "uslugi"]
+    "tekstile", "_nails", "_studio", "uslugi", "center", "oriflame", "sale",
+    "style", "mp3", "support", "sport", "podelki", ]
 
 # "www.", "https",
 skip_bio_keyword = [
@@ -67,7 +68,9 @@ skip_bio_keyword = [
     "чакролог", "матрицу судьбы", "формулу души", "кармическую нумерологию",
     "Косметика", "косметика", "КОСМЕТИКА", "таргет", "Таргет", "ТАРГЕТ",
     "Гарантия", "гарантия", "ГАРАНТИЯ", "game studio", "1С-программирование",
-    "проектирование", "СКУД", "БЕСПЛАТН"]
+    "проектирование", "СКУД", "БЕСПЛАТН", "Tele2", "Разрабатываем", "центр ",
+    "поддержки", "WA/TGRAM", "ОБУЧЕНИЕ", "LEBEL", "FABULOSO", "REDKEN",
+    "лайфхаки", "крутые видео", "Поделки"]
 
 person_categories = [
     "Architectural Designer", "Artist", "Athlete", "Creators & Celebrities",

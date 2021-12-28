@@ -1,11 +1,8 @@
 from dotenv import load_dotenv
 from instapy import InstaPy
 import datetime
-import unfollow
+import actions
 import config
-import filter
-import follow
-import feed
 import os
 
 
@@ -20,26 +17,31 @@ import os
 #   написать и предложить интересное предложение
 # Вести учет статистики подписок и подписчиков в manager.json
 # Сделать класс со всеми действиями
+# Отложенный постинг
+# лайкинг по тэгам
+#   session.like_by_tags(['детинашевсе', 'world'], amount=10, interact=True)
+
+inst_actions = actions.Actions()
 
 
 def day_type_one(session):
     print("Follow")
-    follow.follow(session)
+    inst_actions.follow(session)
 
 
 def day_type_two():
     print("Filtering a base")
-    filter.filter_base()
+    inst_actions.filter_base()
 
 
 def day_type_three(session):
     print("Unfollowing")
-    unfollow.unfollow(session)
+    inst_actions.unfollow(session)
 
 
 def day_type_four(session):
     print("Liking feed")
-    feed.feed_interact(session)
+    inst_actions.feed_interact(session)
 
 
 if __name__ == "__main__":
