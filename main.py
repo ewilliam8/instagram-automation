@@ -22,26 +22,27 @@ import os
 #   session.like_by_tags(['детинашевсе', 'world'], amount=10, interact=True)
 
 inst_actions = actions.Actions()
+nologin_actions = actions.NoLoginActions()
 
 
-def day_type_one(session):
+def day_type_one():
     print("Follow")
-    inst_actions.follow(session)
+    inst_actions.follow(35)
 
 
 def day_type_two():
     print("Filtering a base")
-    inst_actions.filter_base()
+    nologin_actions.filter()
 
 
-def day_type_three(session):
+def day_type_three():
     print("Unfollowing")
-    inst_actions.unfollow(session)
+    inst_actions.unfollow()
 
 
-def day_type_four(session):
+def day_type_four():
     print("Liking feed")
-    inst_actions.feed_interact(session)
+    inst_actions.interact_by_feed()
 
 
 if __name__ == "__main__":
@@ -115,3 +116,6 @@ if __name__ == "__main__":
        day_of_month == "27":
         day_type_two()
         day_type_four(session)
+
+    del inst_actions
+    del nologin_actions

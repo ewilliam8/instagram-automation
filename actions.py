@@ -10,32 +10,37 @@ from instapy import InstaPy
 from instapy import smart_run
 from dotenv import load_dotenv
 
-# Фильтрация только активной аудитории
-#   --> Последние лайки
-#   --> Последние Подписки
-#   --> Последние Комментарии
-
-# Создать список уже отфильтрованных людей, чтобы не фильтровать их еще раз
-
-# ОШИБКА фильтрации с: tanech_garik по ключевому слову "нумеролог"
-# zhulidovamarina с био
-# radmila__87
-
 
 class Actions:
 
-    # proxy = {"https": "https://xWs4zh:4EA5cJ@45.143.246.126:8000"}
-    proxy = None
+    def __init__(self):
+        self.dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+        if os.path.exists(self.dotenv_path):
+            load_dotenv(self.dotenv_path)
 
-    def interact_by_feed(self, session):
-        with smart_run(session):
-            session.set_do_story(enabled=True, percentage=95, simulate=True)
-            session.like_by_feed(amount=50, randomize=True, unfollow=True,
-                                 interact=True)
-            session.end(threaded_session=True)
+        self.session = InstaPy(username=os.getenv("INSTA_USERNAME"),
+                               password=os.getenv("INSTA_PASSWORD"),
+                               headless_browser=config.HEADLESS_BROWSER_BOOL,
+                               bypass_security_challenge_using='sms',
+                               want_check_browser=True)
 
-    def follow(self, session, amount=35):
-        with smart_run(session):
+        # proxy = {"https": "https://xWs4zh:4EA5cJ@45.143.246.126:8000"}
+        self.proxy = None
+
+    def __del__(self):
+        self.session.end(threaded_session=True)
+
+    def interact_by_feed(self):
+        with smart_run(self.session):
+            self.session.set_do_story(enabled=True,
+                                      percentage=95,
+                                      simulate=True)
+            self.session.like_by_feed(amount=50, randomize=True, unfollow=True,
+                                      interact=True)
+            # self.session.end(threaded_session=True)
+
+    def follow(self, amount=35):
+        with smart_run(self.session):
             target_followers = []
             file = config.FILTER_FOLDER + config.account + "_filtered.txt"
             f = open(file).readlines()
@@ -50,81 +55,86 @@ class Actions:
                 for el in target_followers:
                     f.write(el + "\n")
 
-            session.set_dont_include(config.exclude_accaunts)
-            session.set_mandatory_language(enabled=True,
-                                           character_set=['LATIN', 'CYRILLIC'])
-            session.set_simulation(enabled=True, percentage=66)
-            session.set_skip_users(skip_private=False,
-                                   private_percentage=100,
-                                   skip_no_profile_pic=True,
-                                   no_profile_pic_percentage=100,
-                                   skip_business=True,
-                                   skip_non_business=False,
-                                   business_percentage=100,
-                                   skip_business_categories=[],
-                                   dont_skip_business_categories=config.
-                                   person_categories,
-                                   skip_bio_keyword=config.skip_bio_keyword,
-                                   mandatory_bio_keywords=[])
-            session.set_relationship_bounds(enabled=True,
-                                            # potency_ratio=1.34,
-                                            # delimit_by_numbers=True,
-                                            max_followers=8500,
-                                            max_following=4490,
-                                            min_followers=40,
-                                            min_following=40,
-                                            min_posts=1,
-                                            max_posts=2000)
-            session.set_action_delays(enabled=True,
-                                      like=8,
-                                      comment=5,
-                                      follow=4.17,
-                                      unfollow=28,
-                                      story=10)
-            session.set_quota_supervisor(enabled=True,
-                                         sleep_after=["likes", "comments_d",
-                                                      "follows", "unfollows",
-                                                      "server_calls_h"],
-                                         sleepyhead=True,
-                                         stochastic_flow=True,
-                                         notify_me=True,
-                                         peak_likes_hourly=57,
-                                         peak_likes_daily=585,
-                                         peak_comments_hourly=21,
-                                         peak_comments_daily=182,
-                                         peak_follows_hourly=48,
-                                         peak_follows_daily=238,
-                                         peak_unfollows_hourly=35,
-                                         peak_unfollows_daily=402,
-                                         peak_server_calls_hourly=None,
-                                         peak_server_calls_daily=4700)
-            session.set_do_story(enabled=True, percentage=100, simulate=True)
-            session.set_do_like(True, percentage=55)
-            session.follow_by_list(followlist=target_followers, times=1,
-                                   sleep_delay=600, interact=False)
+            self.session.set_dont_include(config.exclude_accaunts)
+            self.session.set_mandatory_language(enabled=True,
+                                                character_set=['LATIN',
+                                                               'CYRILLIC'])
+            self.session.set_simulation(enabled=True, percentage=66)
+            self.session.set_skip_users(skip_private=False,
+                                        private_percentage=100,
+                                        skip_no_profile_pic=True,
+                                        no_profile_pic_percentage=100,
+                                        skip_business=True,
+                                        skip_non_business=False,
+                                        business_percentage=100,
+                                        skip_business_categories=[],
+                                        dont_skip_business_categories=config.
+                                        person_categories,
+                                        skip_bio_keyword=config.
+                                        skip_bio_keyword,
+                                        mandatory_bio_keywords=[])
+            self.session.set_relationship_bounds(enabled=True,
+                                                 max_followers=8500,
+                                                 max_following=4490,
+                                                 min_followers=40,
+                                                 min_following=40,
+                                                 min_posts=1,
+                                                 max_posts=2000)
+            self.session.set_action_delays(enabled=True,
+                                           like=8,
+                                           comment=5,
+                                           follow=4.17,
+                                           unfollow=28,
+                                           story=10)
+            self.session.set_quota_supervisor(enabled=True,
+                                              sleep_after=["likes",
+                                                           "comments_d",
+                                                           "follows",
+                                                           "unfollows",
+                                                           "server_calls_h"],
+                                              leepyhead=True,
+                                              tochastic_flow=True,
+                                              otify_me=True,
+                                              eak_likes_hourly=57,
+                                              eak_likes_daily=585,
+                                              eak_comments_hourly=21,
+                                              eak_comments_daily=182,
+                                              eak_follows_hourly=48,
+                                              eak_follows_daily=238,
+                                              eak_unfollows_hourly=35,
+                                              eak_unfollows_daily=402,
+                                              eak_server_calls_hourly=None,
+                                              eak_server_calls_daily=4700)
+            self.session.set_do_story(enabled=True, percentage=100,
+                                      simulate=True)
+            self.session.set_do_like(True, percentage=55)
+            self.session.follow_by_list(followlist=target_followers, times=1,
+                                        sleep_delay=600, interact=False)
             # session.end(threaded_session=True)
 
-    def unfollow(self, session):
-        with smart_run(session):
+    def unfollow(self):
+        with smart_run(self.session):
 
-            session.set_quota_supervisor(enabled=True,
-                                         sleep_after=["likes", "comments_d",
-                                                      "follows", "unfollows",
-                                                      "server_calls_h"],
-                                         sleepyhead=True,
-                                         stochastic_flow=True,
-                                         notify_me=True,
-                                         peak_unfollows_hourly=35,
-                                         peak_unfollows_daily=402,
-                                         peak_server_calls_hourly=None,
-                                         peak_server_calls_daily=4700)
-            session.unfollow_users(amount=60,
-                                   instapy_followed_enabled=True,
-                                   instapy_followed_param="nonfollowers",
-                                   style="FIFO",
-                                   unfollow_after=90*60*60,
-                                   sleep_delay=501)
-            session.end(threaded_session=True)
+            self.session.set_quota_supervisor(enabled=True,
+                                              sleep_after=["likes",
+                                                           "comments_d",
+                                                           "follows",
+                                                           "unfollows",
+                                                           "server_calls_h"],
+                                              sleepyhead=True,
+                                              stochastic_flow=True,
+                                              notify_me=True,
+                                              peak_unfollows_hourly=35,
+                                              peak_unfollows_daily=402,
+                                              peak_server_calls_hourly=None,
+                                              peak_server_calls_daily=4700)
+            self.session.unfollow_users(amount=60,
+                                        instapy_followed_enabled=True,
+                                        instapy_followed_param="nonfollowers",
+                                        style="FIFO",
+                                        unfollow_after=90*60*60,
+                                        sleep_delay=501)
+            # self.session.end(threaded_session=True)
             # session.remove_follow_requests(amount=200, sleep_delay=600)
 
             # instapy_followed_enabled - отписываемся от пользователей,
@@ -138,6 +148,101 @@ class Actions:
             # instapy_followed_param="nonfollowers", style="FIFO",
             # unfollow_after=90*60*60, sleep_delay=501)
 
+    def like(self):
+        with smart_run(self.session):
+
+            target_followers = []
+            file = FILTER_FOLDER + account + "_filtered.txt"
+            f = open(file).readlines()
+            for i in range(0, 25):
+                user = f.pop(0).replace('\n', '')
+                target_followers.append(user)
+
+            with open(file, 'w', encoding='UTF-8') as F:
+                F.writelines(f)
+
+            with open(INTERACTED_FILE, 'a', encoding='UTF-8') as f:
+                for el in target_followers:
+                    f.write(el + "\n")
+
+            self.session.set_dont_include(exclude_accaunts)
+            self.session.set_mandatory_language(enabled=True,
+                                                character_set=['LATIN',
+                                                               'CYRILLIC'])
+            self.session.set_simulation(enabled=True, percentage=66)
+            self.session.set_skip_users(skip_private=True,
+                                        private_percentage=100,
+                                        skip_no_profile_pic=True,
+                                        no_profile_pic_percentage=100,
+                                        skip_business=True,
+                                        skip_non_business=False,
+                                        business_percentage=100,
+                                        skip_business_categories=[],
+                                        dont_skip_business_categories=person_categories,
+                                        skip_bio_keyword=skip_bio_keyword,
+                                        mandatory_bio_keywords=[])
+            self.session.set_relationship_bounds(enabled=True,
+                                                 max_followers=8500,
+                                                 max_following=4490,
+                                                 min_followers=40,
+                                                 min_following=40,
+                                                 min_posts=1,
+                                                 max_posts=2000)
+            self.session.set_action_delays(enabled=True,
+                                           like=8,
+                                           comment=5,
+                                           follow=4.17,
+                                           unfollow=28,
+                                           story=10)
+            self.session.set_quota_supervisor(enabled=True,
+                                              sleep_after=["likes",
+                                                           "comments_d",
+                                                           "follows",
+                                                           "unfollows",
+                                                           "server_calls_h"],
+                                              sleepyhead=True,
+                                              stochastic_flow=True,
+                                              notify_me=True,
+                                              peak_likes_hourly=57,
+                                              peak_likes_daily=585,
+                                              peak_comments_hourly=21,
+                                              peak_comments_daily=182,
+                                              peak_follows_hourly=48,
+                                              peak_follows_daily=238,
+                                              peak_unfollows_hourly=35,
+                                              peak_unfollows_daily=402,
+                                              peak_server_calls_hourly=None,
+                                              peak_server_calls_daily=4700)
+            self.session.set_do_story(enabled=True, percentage=100,
+                                      simulate=True)
+            self.session.set_do_like(True, percentage=95)
+            self.session.interact_by_users(target_followers, amount=1,
+                                           randomize=True, media='Photo')
+            # self.session.end(threaded_session=True)
+
+    def message(self):
+        # Актуальные лимиты рассылки сообщений:
+        # новым подписчикам - 70 смс/сут
+        # лицам, не подписанным на профиль - 50 смс/сут
+        pass
+
+    def full_parse_followers(self):
+
+        target_accounts = [config.account]
+        for account in target_accounts:
+            f = open(config.PARSE_FOLDER + account + '_followers.txt', 'w')
+            target_followers = self.session.grab_followers(username=account,
+                                                           amount="full",
+                                                           live_match=False,
+                                                           store_locally=False)
+            for el in target_followers:
+                f.write(el + "\n")
+
+            f.close()
+
+
+class NoLoginActions:
+
     def __manager_add(self, key, value):
         with open(MANAGER_FILE, "r", encoding='UTF-8') as file_manager:
             data = json.load(file_manager)
@@ -147,7 +252,8 @@ class Actions:
         with open(MANAGER_FILE, "w", encoding='UTF-8') as file_manager_w:
             json.dump(data, file_manager_w, indent=4)
 
-    def __check_user(self, username, skip_words=[],
+    def __check_user(self, username,
+                     skip_words=[],
                      non_skip_business_categories=[],
                      skip_private=True
                      ):
@@ -297,6 +403,16 @@ class Actions:
         print("+ Added to a list")
         return username
 
+    # Фильтрация только активной аудитории
+    #   --> Последние лайки
+    #   --> Последние Подписки
+    #   --> Последние Комментарии
+
+    # Создать список уже отфильтрованных людей, чтобы не фильтровать их еще раз
+
+    # ОШИБКА фильтрации с: tanech_garik по ключевому слову "нумеролог"
+    # zhulidovamarina с био
+    # radmila__87
     def filter(self, amount=9):
         for gi in range(0, amount):
 
@@ -348,113 +464,13 @@ class Actions:
                 print("~~ Sleeping between 1 and 5 minutes")
                 time.sleep(random.randint(60, 300))
 
-    def like(self, session):
-        with smart_run(session):
-
-            target_followers = []
-            file = FILTER_FOLDER + account + "_filtered.txt"
-            f = open(file).readlines()
-            for i in range(0, 25):
-                user = f.pop(0).replace('\n', '')
-                target_followers.append(user)
-
-            with open(file, 'w', encoding='UTF-8') as F:
-                F.writelines(f)
-
-            with open(INTERACTED_FILE, 'a', encoding='UTF-8') as f:
-                for el in target_followers:
-                    f.write(el + "\n")
-
-            # взаимодействие: лайкинг и просмотр сториз
-            session.set_dont_include(exclude_accaunts)
-            session.set_mandatory_language(enabled=True,
-                                           character_set=['LATIN', 'CYRILLIC'])
-            session.set_simulation(enabled=True, percentage=66)
-            session.set_skip_users(skip_private=True,
-                                   private_percentage=100,
-                                   skip_no_profile_pic=True,
-                                   no_profile_pic_percentage=100,
-                                   skip_business=True,
-                                   skip_non_business=False,
-                                   business_percentage=100,
-                                   skip_business_categories=[],
-                                   dont_skip_business_categories=person_categories,
-                                   skip_bio_keyword=skip_bio_keyword,
-                                   mandatory_bio_keywords=[])
-            session.set_relationship_bounds(enabled=True,
-                                            max_followers=8500,
-                                            max_following=4490,
-                                            min_followers=40,
-                                            min_following=40,
-                                            min_posts=1,
-                                            max_posts=2000)
-            session.set_action_delays(enabled=True,
-                                      like=8,
-                                      comment=5,
-                                      follow=4.17,
-                                      unfollow=28,
-                                      story=10)
-            session.set_quota_supervisor(enabled=True,
-                                         sleep_after=["likes", "comments_d",
-                                                      "follows", "unfollows",
-                                                      "server_calls_h"],
-                                         sleepyhead=True,
-                                         stochastic_flow=True,
-                                         notify_me=True,
-                                         peak_likes_hourly=57,
-                                         peak_likes_daily=585,
-                                         peak_comments_hourly=21,
-                                         peak_comments_daily=182,
-                                         peak_follows_hourly=48,
-                                         peak_follows_daily=238,
-                                         peak_unfollows_hourly=35,
-                                         peak_unfollows_daily=402,
-                                         peak_server_calls_hourly=None,
-                                         peak_server_calls_daily=4700)
-            session.set_do_story(enabled=True, percentage=100, simulate=True)
-            session.set_do_like(True, percentage=95)
-            session.interact_by_users(target_followers, amount=1,
-                                      randomize=True, media='Photo')
-            session.end(threaded_session=True)
-
-    def message(self):
-        # Актуальные лимиты рассылки сообщений:
-        # новым подписчикам - 70 смс/сут
-        # лицам, не подписанным на профиль - 50 смс/сут
-        pass
-
-    def full_parse_followers(self, session):
-
-        target_accounts = [config.account]
-        for account in target_accounts:
-            f = open(config.PARSE_FOLDER + account + '_followers.txt', 'w')
-            target_followers = session.grab_followers(username=account,
-                                                      amount="full",
-                                                      live_match=False,
-                                                      store_locally=False)
-            for el in target_followers:
-                f.write(el + "\n")
-
-            f.close()
-
 
 if __name__ == "__main__":
 
-    import os
-    import config
-    from dotenv import load_dotenv
     actions = Actions()
 
-    dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
-    if os.path.exists(dotenv_path):
-        load_dotenv(dotenv_path)
-
-    session = InstaPy(username=os.getenv("INSTA_USERNAME"),
-                      password=os.getenv("INSTA_PASSWORD"),
-                      headless_browser=config.HEADLESS_BROWSER_BOOL,
-                      bypass_security_challenge_using='sms',
-                      want_check_browser=True)
-
-    actions.follow(session, 20)
+    actions.follow(20)
     # actions.unfollow(session)
-    # actions.filter()
+
+    # no_login_actions = NoLoginActions()
+    # no_login_actions.filter()
