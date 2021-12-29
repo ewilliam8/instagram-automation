@@ -38,7 +38,7 @@ skip_name_keywords = [
     "khlopok", "vinyl", "photo", "narashivanie", "volos", "cindy",
     "bizhyteriya", "massage", "dietolog", "hlopok", "news", "dress", "recepti",
     "tekstile", "_nails", "_studio", "uslugi", "center", "oriflame", "sale",
-    "style", "mp3", "support", "sport", "podelki", ]
+    "style", "mp3", "support", "sport", "podelki", "kuhni"]
 
 # "www.", "https",
 skip_bio_keyword = [
