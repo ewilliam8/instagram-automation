@@ -14,15 +14,29 @@ from dotenv import load_dotenv
 class Actions:
 
     def __init__(self):
-        self.dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+        self.here = os.path.abspath(os.path.dirname(__file__))
+        self.dotenv_path = os.path.join(
+            os.path.dirname(__file__), '..', '.env')
         if os.path.exists(self.dotenv_path):
             load_dotenv(self.dotenv_path)
+        self.filtered_file = os.path.join(
+            self.here, "\\",
+            "manager", "\\",
+            str(os.getenv("INSTA_USERNAME")), "\\",
+            str(config.FILTER_FOLDER),
+            str(config.account), "_filtered.txt")
+        self.interacted_file = os.path.join(
+            self.here, "\\",
+            "manager", "\\",
+            str(os.getenv("INSTA_USERNAME")), "\\",
+            str(config.INTERACTED_FILE))
 
-        self.session = InstaPy(username=os.getenv("INSTA_USERNAME"),
-                               password=os.getenv("INSTA_PASSWORD"),
-                               headless_browser=config.HEADLESS_BROWSER_BOOL,
-                               bypass_security_challenge_using='sms',
-                               want_check_browser=True)
+        self.session = InstaPy(
+            username=str(os.getenv("INSTA_USERNAME")),
+            password=str(os.getenv("INSTA_PASSWORD")),
+            headless_browser=config.HEADLESS_BROWSER_BOOL,
+            bypass_security_challenge_using='sms',
+            want_check_browser=True)
 
         self.session.set_dont_include(config.exclude_accaunts)
         self.session.set_relationship_bounds(
@@ -61,7 +75,7 @@ class Actions:
             unfollow=28,
             story=10)
         self.session.set_skip_users(
-            skip_private=True,
+            skip_private=False,
             private_percentage=100,
             skip_no_profile_pic=True,
             no_profile_pic_percentage=100,
@@ -76,33 +90,34 @@ class Actions:
             enabled=True,
             character_set=['LATIN', 'CYRILLIC'])
 
-        # proxy = {"https": "https://xWs4zh:4EA5cJ@45.143.246.126:8000"}
-        self.proxy = None
-
-    def __del__(self):
-        self.session.end(threaded_session=True)
+    # def __del__(self):
+    #     self.session.end(threaded_session=True)
 
     def interact_by_feed(self):
         with smart_run(self.session):
-            self.session.set_do_story(enabled=True,
-                                      percentage=95,
-                                      simulate=True)
-            self.session.like_by_feed(amount=50, randomize=True, unfollow=True,
-                                      interact=True)
+            self.session.set_do_story(
+                enabled=True,
+                percentage=95,
+                simulate=True)
+            self.session.like_by_feed(
+                amount=50,
+                randomize=True,
+                unfollow=True,
+                interact=True)
 
     def follow(self, amount=35):
         with smart_run(self.session):
             target_followers = []
-            file = config.FILTER_FOLDER + config.account + "_filtered.txt"
-            f = open(file).readlines()
+
+            f = open(self.filtered_file).readlines()
             for _ in range(0, amount):
                 user = f.pop(0).replace('\n', '')
                 target_followers.append(user)
 
-            with open(file, 'w', encoding='UTF-8') as F:
+            with open(self.filtered_file, 'w', encoding='UTF-8') as F:
                 F.writelines(f)
 
-            with open(config.INTERACTED_FILE, 'a', encoding='UTF-8') as f:
+            with open(self.interacted_file, 'a', encoding='UTF-8') as f:
                 for el in target_followers:
                     f.write(el + "\n")
 
@@ -117,12 +132,13 @@ class Actions:
     def unfollow(self, amount_unf=60):
         with smart_run(self.session):
 
-            self.session.unfollow_users(amount=amount_unf,
-                                        instapy_followed_enabled=True,
-                                        instapy_followed_param="nonfollowers",
-                                        style="FIFO",
-                                        unfollow_after=90*60*60,
-                                        sleep_delay=501)
+            self.session.unfollow_users(
+                amount=amount_unf,
+                instapy_followed_enabled=True,
+                instapy_followed_param="nonfollowers",
+                style="FIFO",
+                unfollow_after=90*60*60,
+                sleep_delay=501)
             # session.remove_follow_requests(amount=200, sleep_delay=600)
 
             # instapy_followed_enabled - отписываемся от пользователей,
@@ -136,7 +152,7 @@ class Actions:
             # instapy_followed_param="nonfollowers", style="FIFO",
             # unfollow_after=90*60*60, sleep_delay=501)
 
-    def like(self):
+    def DO_NOT_WORK_like(self):
         with smart_run(self.session):
 
             target_followers = []
@@ -170,11 +186,19 @@ class Actions:
 
         target_accounts = [config.account]
         for account in target_accounts:
-            f = open(config.PARSE_FOLDER + account + '_followers.txt', 'w')
-            target_followers = self.session.grab_followers(username=account,
-                                                           amount="full",
-                                                           live_match=False,
-                                                           store_locally=False)
+            followers_file = self.here + "\\" + \
+                "manager" + "\\" + \
+                os.getenv("INSTA_USERNAME") + "\\" + \
+                config.PARSE_FOLDER.replace("/", "\\") + \
+                config.account + "_followers.txt"
+
+            f = open(followers_file, 'w', encoding='UTF-8')
+            target_followers = self.session.grab_followers(
+                username=account,
+                amount="full",
+                live_match=False,
+                store_locally=False)
+
             for el in target_followers:
                 f.write(el + "\n")
 
@@ -183,15 +207,43 @@ class Actions:
 
 class NoLoginActions:
 
+    def __init__(self):
+        self.here = os.path.abspath(os.path.dirname(__file__))
+        self.manager_file = os.path.join(
+            self.here + "\\" +
+            "manager" + "\\" +
+            str(os.getenv("INSTA_USERNAME")) + "\\" +
+            str(config.MANAGER_FILE))
+        self.parse_file = os.path.join(
+            self.here, "\\",
+            "manager", "\\",
+            str(os.getenv("INSTA_USERNAME")), "\\",
+            str(config.PARSE_FOLDER),
+            str(config.account), "_followers.txt")
+        self.filtered_file = os.path.join(
+            self.here, "\\",
+            "manager", "\\",
+            str(os.getenv("INSTA_USERNAME")), "\\",
+            str(config.FILTER_FOLDER),
+            str(config.account), "_filtered.txt")
+        self.interacted_file = os.path.join(
+            self.here, "\\",
+            "manager", "\\",
+            str(os.getenv("INSTA_USERNAME")), "\\",
+            "interacted.txt")
+
+        # proxy = {"https": "https://xWs4zh:4EA5cJ@45.143.246.126:8000"}
+        self.proxy = None
+
     def __manager_add(self, key, value):
-        with open(config.MANAGER_FILE, "r", encoding='UTF-8') as file_manager:
+        with open(self.manager_file, "r", encoding='UTF-8') as file_manager:
             data = json.load(file_manager)
 
         data[os.getenv("INSTA_USERNAME")][key].append(value)
 
-        with open(config.MANAGER_FILE, "w", encoding='UTF-8') \
+        with open(self.manager_file, "w", encoding='UTF-8') \
                 as file_manager_w:
-            json.dump(data, file_manager_w, indent=4)
+            json.dump(data, file_manager_w)
 
     def __check_user(self, username,
                      skip_words=[],
@@ -224,7 +276,7 @@ class NoLoginActions:
                 return None
 
         # check with already interacted users
-        interacted_users = open(config.INTERACTED_FILE,
+        interacted_users = open(self.interacted_file,
                                 'r', encoding='UTF-8').readlines()
         for index, elem in enumerate(interacted_users, start=0):
             interacted_users[index] = elem[:-1]
@@ -249,9 +301,12 @@ class NoLoginActions:
         bio_and_desc = str(soup.find_all("script"))
         bio_and_desc = bio_and_desc.encode("utf-16", "surrogatepass") \
                                    .decode("utf-16", "surrogatepass")
-        bio_and_desc_extra = bio_and_desc[
+        biography_extra = bio_and_desc[
             bio_and_desc.find('biography'):
             bio_and_desc.find('blocked_by_viewer')][12:-3]
+        biography_extra_decoded = biography_extra \
+            .encode("utf-16", "surrogatepass") \
+            .decode("utf-16", "surrogatepass")
         bio_and_desc = bio_and_desc[
             find_nth(bio_and_desc, "<script", 5):
             find_nth(bio_and_desc, "</script", 5)]
@@ -274,21 +329,22 @@ class NoLoginActions:
 
         posts = follows_name_posts.split(" ")[5]
         posts = int(str(posts).replace(',', ''))
-        name = str(follows_name_posts.split(" ")[14:-2])[1:-1]\
+        name = str(follows_name_posts.split(" ")[14:-2])[1:-1]
+        name_decoded = name \
             .replace("'", '').replace(',', '') \
             .encode("utf-16", "surrogatepass") \
             .decode("utf-16", "surrogatepass")
         biography = bio_and_desc[
             bio_and_desc.find("biography") + 12:
-            bio_and_desc.find("blocked_by_viewer") - 3] \
+            bio_and_desc.find("blocked_by_viewer") - 3]
+        biography_decoded = biography \
             .encode("utf-16", "surrogatepass") \
             .decode("utf-16", "surrogatepass")
-        biography_extra = bio_and_desc_extra
 
         # Ограничения по подписчикам, подпискам и кол-во постов
         if followers < min_followers or followers > max_followers:
-            print(f"× The user has unacceptable \
-                amount of followers: {followers}")
+            print(
+              f"× The user has unacceptable amount of followers: {followers}")
             return None
 
         if following < min_following or following > max_following:
@@ -329,15 +385,18 @@ class NoLoginActions:
             word = str(word.encode("unicode_escape"))\
                 .replace('\\\\', '\\')[2:-1]
 
-            if name.find(word) != -1:
+            if name.find(word) != -1 and \
+                    name_decoded.find(word) != -1:
                 print(f"× User skipped by keyword in Name: {word_to_print}")
                 return None
 
-            if biography.find(word) != -1:
+            if biography.find(word) != -1 and \
+                    biography_decoded.find(word) != -1:
                 print(f"× User skipped by keyword in Bio: {word_to_print}")
                 return None
 
-            if biography_extra.find(word) != -1:
+            if biography_extra.find(word) != -1 and \
+                    biography_extra_decoded.find(word) != -1:
                 print(f"× User skipped by keyword in Bio: {word_to_print}")
                 return None
 
@@ -350,24 +409,17 @@ class NoLoginActions:
     #   --> Последние Комментарии
 
     # Создать список уже отфильтрованных людей, чтобы не фильтровать их еще раз
-
-    # ОШИБКА фильтрации с: tanech_garik по ключевому слову "нумеролог"
-    # zhulidovamarina с био
-    # radmila__87
     def filter(self, amount=9):
         for gi in range(0, amount):
 
             accounts_to_check = []
             exception_occurred = 0
-            with open(config.PARSE_FOLDER + config.account + '_followers.txt',
-                      'r', encoding='UTF-8') as f:
+            with open(self.parse_file, 'r', encoding='UTF-8') as f:
                 userslist = f.readlines()
                 for _ in range(0, 10):
                     user = userslist.pop(0).replace('\n', '')
                     accounts_to_check.append(user)
-                with open(config.PARSE_FOLDER + config.account +
-                          '_followers.txt',
-                          'w', encoding='UTF-8') as F:
+                with open(self.parse_file, 'w', encoding='UTF-8') as F:
                     F.writelines(userslist)
 
             filtered_accounts = []
@@ -396,8 +448,7 @@ class NoLoginActions:
 
                 time.sleep(random.randint(1, 5))
 
-            with open(config.FILTER_FOLDER + config.account + '_filtered.txt',
-                      'a', encoding='UTF-8') as f:
+            with open(self.filtered_file, 'a', encoding='UTF-8') as f:
 
                 for el in filtered_accounts:
                     f.write(el + "\n")
@@ -411,9 +462,15 @@ class NoLoginActions:
 if __name__ == "__main__":
 
     actions = Actions()
+    # no_login_actions = NoLoginActions()
 
-    actions.follow(35)
+    actions.interact_by_feed()
+    # actions.follow(35)
     # actions.unfollow(100)
+    # no_login_actions.filter(10)
+    # print(no_login_actions.__check_user("tanech_garik"))
 
     # no_login_actions = NoLoginActions()
     # no_login_actions.filter()
+
+    # del actions

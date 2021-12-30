@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 
-PROGRAM_VERSION = '1.5'
+PROGRAM_VERSION = '1.7'
 
 dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
 if os.path.exists(dotenv_path):
@@ -16,8 +16,8 @@ else:
     HEADLESS_BROWSER_BOOL = False
 
 
-FILTER_FOLDER = "FILTER/"
-PARSE_FOLDER = "PARSE/"
+FILTER_FOLDER = "FILTER\\"
+PARSE_FOLDER = "PARSE\\"
 INTERACTED_FILE = "interacted.txt"
 MANAGER_FILE = "manager.json"
 
@@ -70,7 +70,7 @@ skip_bio_keyword = [
     "Гарантия", "гарантия", "ГАРАНТИЯ", "game studio", "1С-программирование",
     "проектирование", "СКУД", "БЕСПЛАТН", "Tele2", "Разрабатываем", "центр ",
     "поддержки", "WA/TGRAM", "ОБУЧЕНИЕ", "LEBEL", "FABULOSO", "REDKEN",
-    "лайфхаки", "крутые видео", "Поделки"]
+    "лайфхаки", "крутые видео", "Поделки", "Нумеролог"]
 
 person_categories = [
     "Architectural Designer", "Artist", "Athlete", "Creators & Celebrities",

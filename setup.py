@@ -9,11 +9,14 @@ from dotenv import load_dotenv
 here = path.abspath(path.dirname(__file__))
 
 dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
-interacted_file_path = os.path.join(os.path.dirname(__file__), INTERACTED_FILE)
-path_to_storage = os.path.join(here + "\\src\\manager\\storage")
+path_to_storage = os.path.join(here + "\\src\\manager")
 path_to_storage_username = os.path.join(
     path_to_storage + "\\" +
     os.getenv("INSTA_USERNAME"))
+interacted_file_path = path_to_storage_username + "\\" + INTERACTED_FILE
+parse_folder__path = path_to_storage_username + "\\" + PARSE_FOLDER
+filter_folder_path = path_to_storage_username + "\\" + FILTER_FOLDER
+manager_file_path = path_to_storage_username + "\\" + MANAGER_FILE
 
 
 def readall(*args):
@@ -33,37 +36,36 @@ if not sys.version_info.major and sys.version_info.minor:
 if os.path.exists(dotenv_path):
     load_dotenv(dotenv_path)
 
-
 if not os.path.exists(path_to_storage):
     os.mkdir(path_to_storage)
 
 if not os.path.exists(path_to_storage_username):
     os.mkdir(path_to_storage_username)
 
-interacted_file_path = path_to_storage_username + "\\" + INTERACTED_FILE
 if not os.path.exists(interacted_file_path):
     open(interacted_file_path, "w", encoding='UTF-8').close()
 
-parse_folder__path = path_to_storage_username + "\\" + PARSE_FOLDER
 if not os.path.isdir(parse_folder__path):
     os.mkdir(parse_folder__path)
 
-filter_folder_path = path_to_storage_username + "\\" + FILTER_FOLDER
 if not os.path.isdir(filter_folder_path):
     os.mkdir(filter_folder_path)
 
-manager_file_path = path_to_storage_username + "\\" + MANAGER_FILE
-with open(manager_file_path, "w", encoding='UTF-8') as file_manager:
-    data = {
-        os.getenv("INSTA_USERNAME"): {
-            # "messaged": [],
-            "donor_accounts": [],
-            "interacted_users": [],
-            "actual_filtered": [],
-            "already_filtered": []
+if not os.path.exists(manager_file_path):
+    with open(manager_file_path, "w", encoding='UTF-8') as file_manager:
+        data = {
+            os.getenv("INSTA_USERNAME"):
+            {
+                "INSTA_USERNAME": "",
+                "INSTA_PASSWORD": "",
+                "KEY": "",
+                "donor_accounts": [],
+                "statistic": []
+                # "messaged": [],
+                # "buyed": []
+            }
         }
-    }
-    json.dump(data, file_manager, indent=4)
+        json.dump(data, file_manager, indent=4)
 
 with open("requirements.txt") as f:
     dependencies = f.read().splitlines()
