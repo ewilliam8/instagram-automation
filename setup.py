@@ -58,7 +58,6 @@ if not os.path.exists(manager_file_path):
             {
                 "INSTA_USERNAME": "",
                 "INSTA_PASSWORD": "",
-                "KEY": "",
                 "donor_accounts": [],
                 "statistic": []
                 # "messaged": [],

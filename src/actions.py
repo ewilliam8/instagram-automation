@@ -31,12 +31,32 @@ class Actions:
             str(os.getenv("INSTA_USERNAME")), "\\",
             str(config.INTERACTED_FILE))
 
-        self.session = InstaPy(
-            username=str(os.getenv("INSTA_USERNAME")),
-            password=str(os.getenv("INSTA_PASSWORD")),
-            headless_browser=config.HEADLESS_BROWSER_BOOL,
-            bypass_security_challenge_using='sms',
-            want_check_browser=True)
+        proxy = {
+            "username": 'xWs4zh',
+            "password": '4EA5cJ',
+            "address": '45.143.246.126',
+            "port": 8000
+        }
+
+        if bool(proxy):
+            self.session = InstaPy(
+                username=str(os.getenv("INSTA_USERNAME")),
+                password=str(os.getenv("INSTA_PASSWORD")),
+                headless_browser=False,
+                bypass_security_challenge_using='sms',
+                want_check_browser=True,
+                proxy_username=proxy["username"],
+                proxy_password=proxy["password"],
+                proxy_address=proxy["address"],
+                proxy_port=proxy["port"])
+            input("Введите Логин и Пароль для прокси, нажмите Enter")
+        else:
+            self.session = InstaPy(
+                username=str(os.getenv("INSTA_USERNAME")),
+                password=str(os.getenv("INSTA_PASSWORD")),
+                headless_browser=config.HEADLESS_BROWSER_BOOL,
+                bypass_security_challenge_using='sms',
+                want_check_browser=True)
 
         self.session.set_dont_include(config.exclude_accaunts)
         self.session.set_relationship_bounds(
@@ -88,19 +108,16 @@ class Actions:
             mandatory_bio_keywords=[])
         self.session.set_mandatory_language(
             enabled=True,
-            character_set=['LATIN', 'CYRILLIC'])
+            character_set=['CYRILLIC'])
 
-    # def __del__(self):
-    #     self.session.end(threaded_session=True)
-
-    def interact_by_feed(self):
+    def interact_by_feed(self, amount_interact=50):
         with smart_run(self.session):
             self.session.set_do_story(
                 enabled=True,
                 percentage=95,
                 simulate=True)
             self.session.like_by_feed(
-                amount=50,
+                amount=amount_interact,
                 randomize=True,
                 unfollow=True,
                 interact=True)
@@ -121,8 +138,7 @@ class Actions:
                 for el in target_followers:
                     f.write(el + "\n")
 
-            # self.session.set_simulation(enabled=True, percentage=66)
-            #    проверить работу
+            self.session.set_simulation(enabled=True, percentage=66)
             self.session.set_do_story(enabled=True, percentage=100,
                                       simulate=True)
             self.session.set_do_like(True, percentage=55)
@@ -132,13 +148,20 @@ class Actions:
     def unfollow(self, amount_unf=60):
         with smart_run(self.session):
 
+            # self.session.unfollow_users(
+            #     amount=amount_unf,
+            #     instapy_followed_enabled=True,
+            #     instapy_followed_param="nonfollowers",
+            #     style="FIFO",
+            #     unfollow_after=90*60*60,
+            #     sleep_delay=501)
+
             self.session.unfollow_users(
                 amount=amount_unf,
-                instapy_followed_enabled=True,
-                instapy_followed_param="nonfollowers",
+                allFollowing=True,
                 style="FIFO",
-                unfollow_after=90*60*60,
-                sleep_delay=501)
+                unfollow_after=3*60*60,
+                sleep_delay=450)
             # session.remove_follow_requests(amount=200, sleep_delay=600)
 
             # instapy_followed_enabled - отписываемся от пользователей,
@@ -458,15 +481,15 @@ class NoLoginActions:
                 print("~~ Sleeping between 1 and 5 minutes")
                 time.sleep(random.randint(60, 300))
 
-
+# korand96 - учитель программирования
 if __name__ == "__main__":
 
     actions = Actions()
     # no_login_actions = NoLoginActions()
 
-    actions.interact_by_feed()
+    actions.interact_by_feed(15)
     # actions.follow(35)
-    # actions.unfollow(100)
+    # actions.unfollow(60)
     # no_login_actions.filter(10)
     # print(no_login_actions.__check_user("tanech_garik"))
 
