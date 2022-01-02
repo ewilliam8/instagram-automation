@@ -1,12 +1,25 @@
 import os
 from dotenv import load_dotenv
 
+PROGRAM_VERSION = '2'
+
 dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
 if os.path.exists(dotenv_path):
     load_dotenv(dotenv_path)
 
-FILTER_FOLDER = "FILTER/"
-PARSE_FOLDER = "PARSE/"
+
+if os.getenv("HEADLESS_BROWSER") == "True":
+    HEADLESS_BROWSER_BOOL = True
+elif os.getenv("HEADLESS_BROWSER") == "False":
+    HEADLESS_BROWSER_BOOL = False
+else:
+    HEADLESS_BROWSER_BOOL = False
+
+
+FILTER_FOLDER = "FILTER\\"
+PARSE_FOLDER = "PARSE\\"
+INTERACTED_FILE = "interacted.txt"
+MANAGER_FILE = "manager.json"
 
 account = os.getenv("TARGET_ACCOUNT")
 target_accaunts = [account]
@@ -24,7 +37,9 @@ skip_name_keywords = [
     "sintepuh", "shapki", "_club", "pitomniki", "store", "avon", "dedmoroz",
     "khlopok", "vinyl", "photo", "narashivanie", "volos", "cindy",
     "bizhyteriya", "massage", "dietolog", "hlopok", "news", "dress", "recepti",
-    "tekstile", "_nails"]
+    "tekstile", "_nails", "_studio", "uslugi", "center", "oriflame", "sale",
+    "style", "mp3", "support", "sport", "podelki", "kuhni", "remont",
+    "komfort", "fincontrol"]
 
 # "www.", "https",
 skip_bio_keyword = [
@@ -46,14 +61,19 @@ skip_bio_keyword = [
     "Магазин", "продажа", "Продажа", "Ремонт", "ремонт", "Обслуживание",
     "обслуживание", "Фаберлик", "фаберлик", "реклама", "Реклама", "Печать",
     "печать", "dir", "what’s up", "бровист", "Бровист", "Пиши мне", "Шоурум",
-    "ШОУРУМ", "what’s app", "Самовывоз", "САМОВЫВОЗ", "Меню", "МЕНЮ",
+    "ШОУРУМ", "шоурум", "what’s app", "Самовывоз", "САМОВЫВОЗ", "Меню", "МЕНЮ",
     "Ипотека", "ИПОТЕКА", "Совкомбанк", "Работаем", "Вознаграждение", "Сайты",
     "Отчет", "платья", "Платья", "ОБУЧЕНИЕ", "обувь", "Обувь", "Кожа", "кожа",
     "КУКЛЫ", "Куклы", "куклы", "Набираю команду", "набираю команду",
     "НАБИРАЮ КОМАНДУ", "Научу зарабатывать", "дайрект", "нумеролог",
     "чакролог", "матрицу судьбы", "формулу души", "кармическую нумерологию",
     "Косметика", "косметика", "КОСМЕТИКА", "таргет", "Таргет", "ТАРГЕТ",
-    "Гарантия", "гарантия", "ГАРАНТИЯ"]
+    "Гарантия", "гарантия", "ГАРАНТИЯ", "game studio", "1С-программирование",
+    "проектирование", "СКУД", "БЕСПЛАТН", "Tele2", "Разрабатываем", "центр ",
+    "поддержки", "WA/TGRAM", "ОБУЧЕНИЕ", "LEBEL", "FABULOSO", "REDKEN",
+    "лайфхаки", "крутые видео", "Поделки", "Нумеролог", "Изготовление",
+    "изготовление", "support", "Support", "Ремонт", "ремонт", "РЕМОНТ",
+    "ЗАКАЗАТЬ", "МОТИВАТОР", "франшиза"]
 
 person_categories = [
     "Architectural Designer", "Artist", "Athlete", "Creators & Celebrities",

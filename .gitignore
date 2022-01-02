@@ -1,6 +1,9 @@
-__pycache__/
-FILTER/
-PARSE/
-.vscode/
+__pycache__
+FILTER
+PARSE
+manager
+InstaPy
+.vscode
 geckodriver.log
 .env
+test.py
