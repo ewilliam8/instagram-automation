@@ -1,22 +1,23 @@
 import os
 import sys
 import json
+import src.config as config
 from os import path
-from src.config import *
 from io import open as io_open
-from setuptools import setup
 from dotenv import load_dotenv
+
+from instapy import set_workspace
 here = path.abspath(path.dirname(__file__))
 
 dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
 path_to_storage = os.path.join(here + "\\src\\manager")
 path_to_storage_username = os.path.join(
     path_to_storage + "\\" +
-    os.getenv("INSTA_USERNAME"))
-interacted_file_path = path_to_storage_username + "\\" + INTERACTED_FILE
-parse_folder__path = path_to_storage_username + "\\" + PARSE_FOLDER
-filter_folder_path = path_to_storage_username + "\\" + FILTER_FOLDER
-manager_file_path = path_to_storage_username + "\\" + MANAGER_FILE
+    str(os.getenv("INSTA_USERNAME")) + "\\")
+interacted_file_path = path_to_storage_username + config.INTERACTED_FILE
+parse_folder__path = path_to_storage_username + config.PARSE_FOLDER
+filter_folder_path = path_to_storage_username + config.FILTER_FOLDER
+manager_file_path = path_to_storage_username + config.MANAGER_FILE
 
 
 def readall(*args):
@@ -66,14 +67,10 @@ if not os.path.exists(manager_file_path):
         }
         json.dump(data, file_manager, indent=4)
 
+set_workspace(path=path_to_storage_username)
+
 with open("requirements.txt") as f:
     dependencies = f.read().splitlines()
-
-# setup(
-#     name="instapy extended",
-#     version="1.0",
-#     install_requires=dependencies
-# )
 
 documentation = readall("README.md")
 print(documentation)

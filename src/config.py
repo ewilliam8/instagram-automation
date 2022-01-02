@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 
-PROGRAM_VERSION = '1.7'
+PROGRAM_VERSION = '2'
 
 dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
 if os.path.exists(dotenv_path):

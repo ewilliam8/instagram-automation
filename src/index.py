@@ -6,21 +6,6 @@ import config
 import os
 
 
-# TODO
-# Autostart the program
-# UI
-# Deferred posting
-
-# Код для работы на 28 дней +-
-# Проверить прокси IPv4 --> разобраться с версиями Firefox
-# like.py - разобраться с файлом
-# Модуль взаимодействия с новыми подписчиками:
-#   написать и предложить интересное предложение
-# Вести учет статистики подписок и подписчиков в manager.json
-# лайкинг по тэгам
-#   session.like_by_tags(['детинашевсе', 'world'], amount=10, interact=True)
-
-
 def main():
 
     inst_actions = actions.Actions()

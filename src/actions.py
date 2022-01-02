@@ -8,6 +8,7 @@ import requests
 from bs4 import BeautifulSoup
 from instapy import InstaPy
 from instapy import smart_run
+from instapy import set_workspace
 from dotenv import load_dotenv
 
 
@@ -19,23 +20,24 @@ class Actions:
             os.path.dirname(__file__), '..', '.env')
         if os.path.exists(self.dotenv_path):
             load_dotenv(self.dotenv_path)
+        path_to_manager = os.path.join(
+            self.here + "\\" +
+            "manager" + "\\" +
+            str(os.getenv("INSTA_USERNAME")) + "\\")
         self.filtered_file = os.path.join(
-            self.here, "\\",
-            "manager", "\\",
-            str(os.getenv("INSTA_USERNAME")), "\\",
-            str(config.FILTER_FOLDER),
-            str(config.account), "_filtered.txt")
+            path_to_manager +
+            str(config.FILTER_FOLDER) +
+            str(config.account) + "_filtered.txt")
         self.interacted_file = os.path.join(
-            self.here, "\\",
-            "manager", "\\",
-            str(os.getenv("INSTA_USERNAME")), "\\",
+            path_to_manager +
             str(config.INTERACTED_FILE))
 
+        set_workspace(path=path_to_manager)
         proxy = {
-            "username": 'xWs4zh',
-            "password": '4EA5cJ',
-            "address": '45.143.246.126',
-            "port": 8000
+            "username": str(os.getenv("PROXY_LOGIN")),
+            "password": str(os.getenv("PROXY_PASSWORD")),
+            "address": str(os.getenv("PROXY_IP")),
+            "port": str(os.getenv("PROXY_PORT"))
         }
 
         if bool(proxy):
@@ -44,12 +46,14 @@ class Actions:
                 password=str(os.getenv("INSTA_PASSWORD")),
                 headless_browser=False,
                 bypass_security_challenge_using='sms',
+                disable_image_load=True,
                 want_check_browser=True,
                 proxy_username=proxy["username"],
                 proxy_password=proxy["password"],
                 proxy_address=proxy["address"],
                 proxy_port=proxy["port"])
-            input("Введите Логин и Пароль для прокси, нажмите Enter")
+            input("\nВведите Логин и Пароль для прокси," +
+                  "введите любую клавишу и нажмите Enter")
         else:
             self.session = InstaPy(
                 username=str(os.getenv("INSTA_USERNAME")),
@@ -57,7 +61,6 @@ class Actions:
                 headless_browser=config.HEADLESS_BROWSER_BOOL,
                 bypass_security_challenge_using='sms',
                 want_check_browser=True)
-
         self.session.set_dont_include(config.exclude_accaunts)
         self.session.set_relationship_bounds(
             enabled=True,
@@ -111,7 +114,7 @@ class Actions:
             character_set=['CYRILLIC'])
 
     def interact_by_feed(self, amount_interact=50):
-        with smart_run(self.session):
+        with smart_run(self.session, threaded=True):
             self.session.set_do_story(
                 enabled=True,
                 percentage=95,
@@ -123,7 +126,7 @@ class Actions:
                 interact=True)
 
     def follow(self, amount=35):
-        with smart_run(self.session):
+        with smart_run(self.session, threaded=True):
             target_followers = []
 
             f = open(self.filtered_file).readlines()
@@ -146,86 +149,35 @@ class Actions:
                                         sleep_delay=600, interact=True)
 
     def unfollow(self, amount_unf=60):
-        with smart_run(self.session):
-
-            # self.session.unfollow_users(
-            #     amount=amount_unf,
-            #     instapy_followed_enabled=True,
-            #     instapy_followed_param="nonfollowers",
-            #     style="FIFO",
-            #     unfollow_after=90*60*60,
-            #     sleep_delay=501)
-
+        with smart_run(self.session, threaded=True):
             self.session.unfollow_users(
                 amount=amount_unf,
                 allFollowing=True,
                 style="FIFO",
                 unfollow_after=3*60*60,
                 sleep_delay=450)
-            # session.remove_follow_requests(amount=200, sleep_delay=600)
 
-            # instapy_followed_enabled - отписываемся от пользователей,
-            # на которых были подписаны с помощью бота Instapy
+    def full_parse_followers(self):
+        with smart_run(self.session, threaded=True):
+            target_accounts = [config.account]
+            for account in target_accounts:
+                followers_file = self.here + "\\" + \
+                    "manager" + "\\" + \
+                    os.getenv("INSTA_USERNAME") + "\\" + \
+                    config.PARSE_FOLDER.replace("/", "\\") + \
+                    config.account + "_followers.txt"
 
-            # session.unfollow_users(amount=60, instapy_followed_enabled=True,
-            # instapy_followed_param="all", style="FIFO",
-            # unfollow_after=90*60*60, sleep_delay=501)
+                f = open(followers_file, 'w', encoding='UTF-8')
+                target_followers = self.session.grab_followers(
+                    username=account,
+                    amount="full",
+                    live_match=False,
+                    store_locally=False)
 
-            # session.unfollow_users(amount=60, instapy_followed_enabled=True,
-            # instapy_followed_param="nonfollowers", style="FIFO",
-            # unfollow_after=90*60*60, sleep_delay=501)
-
-    def DO_NOT_WORK_like(self):
-        with smart_run(self.session):
-
-            target_followers = []
-            file = config.FILTER_FOLDER + config.account + "_filtered.txt"
-            f = open(file).readlines()
-            for _ in range(0, 25):
-                user = f.pop(0).replace('\n', '')
-                target_followers.append(user)
-
-            with open(file, 'w', encoding='UTF-8') as F:
-                F.writelines(f)
-
-            with open(config.INTERACTED_FILE, 'a', encoding='UTF-8') as f:
                 for el in target_followers:
                     f.write(el + "\n")
 
-            self.session.set_simulation(enabled=True, percentage=66)
-            self.session.set_do_story(enabled=True, percentage=100,
-                                      simulate=True)
-            self.session.set_do_like(True, percentage=95)
-            self.session.interact_by_users(target_followers, amount=1,
-                                           randomize=True, media='Photo')
-
-    def message(self):
-        # Актуальные лимиты рассылки сообщений:
-        # новым подписчикам - 70 смс/сут
-        # лицам, не подписанным на профиль - 50 смс/сут
-        pass
-
-    def full_parse_followers(self):
-
-        target_accounts = [config.account]
-        for account in target_accounts:
-            followers_file = self.here + "\\" + \
-                "manager" + "\\" + \
-                os.getenv("INSTA_USERNAME") + "\\" + \
-                config.PARSE_FOLDER.replace("/", "\\") + \
-                config.account + "_followers.txt"
-
-            f = open(followers_file, 'w', encoding='UTF-8')
-            target_followers = self.session.grab_followers(
-                username=account,
-                amount="full",
-                live_match=False,
-                store_locally=False)
-
-            for el in target_followers:
-                f.write(el + "\n")
-
-            f.close()
+                f.close()
 
 
 class NoLoginActions:
@@ -255,7 +207,7 @@ class NoLoginActions:
             str(os.getenv("INSTA_USERNAME")), "\\",
             "interacted.txt")
 
-        # proxy = {"https": "https://xWs4zh:4EA5cJ@45.143.246.126:8000"}
+        # proxy = {"https": "https://LOGIN:PASSWORD@IP:PORT"}
         self.proxy = None
 
     def __manager_add(self, key, value):
@@ -426,12 +378,6 @@ class NoLoginActions:
         print("+ Added to a list")
         return username
 
-    # Фильтрация только активной аудитории
-    #   --> Последние лайки
-    #   --> Последние Подписки
-    #   --> Последние Комментарии
-
-    # Создать список уже отфильтрованных людей, чтобы не фильтровать их еще раз
     def filter(self, amount=9):
         for gi in range(0, amount):
 
@@ -481,19 +427,12 @@ class NoLoginActions:
                 print("~~ Sleeping between 1 and 5 minutes")
                 time.sleep(random.randint(60, 300))
 
-# korand96 - учитель программирования
+
 if __name__ == "__main__":
 
     actions = Actions()
-    # no_login_actions = NoLoginActions()
 
-    actions.interact_by_feed(15)
-    # actions.follow(35)
-    # actions.unfollow(60)
-    # no_login_actions.filter(10)
-    # print(no_login_actions.__check_user("tanech_garik"))
+    actions.follow(35)
+    actions.unfollow(35)
 
-    # no_login_actions = NoLoginActions()
-    # no_login_actions.filter()
-
-    # del actions
+    del actions

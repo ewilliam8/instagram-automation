@@ -1,11 +1,9 @@
 __pycache__
 FILTER
 PARSE
-storage
+manager
+InstaPy
 .vscode
 geckodriver.log
 .env
 test.py
-interacted.txt
-manager.json
-posting.py
