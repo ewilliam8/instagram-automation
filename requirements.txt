@@ -2,3 +2,4 @@ instapy==0.6.14
 python-dotenv
 requests
 bs4
+lxml

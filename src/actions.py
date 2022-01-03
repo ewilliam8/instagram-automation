@@ -12,174 +12,7 @@ from instapy import set_workspace
 from dotenv import load_dotenv
 
 
-class Actions:
-
-    def __init__(self):
-        self.here = os.path.abspath(os.path.dirname(__file__))
-        self.dotenv_path = os.path.join(
-            os.path.dirname(__file__), '..', '.env')
-        if os.path.exists(self.dotenv_path):
-            load_dotenv(self.dotenv_path)
-        path_to_manager = os.path.join(
-            self.here + "\\" +
-            "manager" + "\\" +
-            str(os.getenv("INSTA_USERNAME")) + "\\")
-        self.filtered_file = os.path.join(
-            path_to_manager +
-            str(config.FILTER_FOLDER) +
-            str(config.account) + "_filtered.txt")
-        self.interacted_file = os.path.join(
-            path_to_manager +
-            str(config.INTERACTED_FILE))
-
-        set_workspace(path=path_to_manager)
-        proxy = {
-            "username": str(os.getenv("PROXY_LOGIN")),
-            "password": str(os.getenv("PROXY_PASSWORD")),
-            "address": str(os.getenv("PROXY_IP")),
-            "port": str(os.getenv("PROXY_PORT"))
-        }
-
-        if bool(proxy):
-            self.session = InstaPy(
-                username=str(os.getenv("INSTA_USERNAME")),
-                password=str(os.getenv("INSTA_PASSWORD")),
-                headless_browser=False,
-                bypass_security_challenge_using='sms',
-                disable_image_load=True,
-                want_check_browser=True,
-                proxy_username=proxy["username"],
-                proxy_password=proxy["password"],
-                proxy_address=proxy["address"],
-                proxy_port=proxy["port"])
-            input("\nВведите Логин и Пароль для прокси," +
-                  "введите любую клавишу и нажмите Enter")
-        else:
-            self.session = InstaPy(
-                username=str(os.getenv("INSTA_USERNAME")),
-                password=str(os.getenv("INSTA_PASSWORD")),
-                headless_browser=config.HEADLESS_BROWSER_BOOL,
-                bypass_security_challenge_using='sms',
-                want_check_browser=True)
-        self.session.set_dont_include(config.exclude_accaunts)
-        self.session.set_relationship_bounds(
-            enabled=True,
-            max_followers=8500,
-            max_following=4490,
-            min_followers=40,
-            min_following=40,
-            min_posts=1,
-            max_posts=2000)
-        self.session.set_quota_supervisor(
-            enabled=True,
-            sleep_after=["likes",
-                         "comments_d",
-                         "follows",
-                         "unfollows",
-                         "server_calls_h"],
-            sleepyhead=True,
-            stochastic_flow=True,
-            notify_me=True,
-            peak_likes_hourly=57,
-            peak_likes_daily=585,
-            peak_comments_hourly=21,
-            peak_comments_daily=182,
-            peak_follows_hourly=48,
-            peak_follows_daily=238,
-            peak_unfollows_hourly=35,
-            peak_unfollows_daily=402,
-            peak_server_calls_hourly=None,
-            peak_server_calls_daily=4700)
-        self.session.set_action_delays(
-            enabled=True,
-            like=8,
-            comment=5,
-            follow=4.17,
-            unfollow=28,
-            story=10)
-        self.session.set_skip_users(
-            skip_private=False,
-            private_percentage=100,
-            skip_no_profile_pic=True,
-            no_profile_pic_percentage=100,
-            skip_business=True,
-            skip_non_business=False,
-            business_percentage=100,
-            skip_business_categories=[],
-            dont_skip_business_categories=config.person_categories,
-            skip_bio_keyword=config.skip_bio_keyword,
-            mandatory_bio_keywords=[])
-        self.session.set_mandatory_language(
-            enabled=True,
-            character_set=['CYRILLIC'])
-
-    def interact_by_feed(self, amount_interact=50):
-        with smart_run(self.session, threaded=True):
-            self.session.set_do_story(
-                enabled=True,
-                percentage=95,
-                simulate=True)
-            self.session.like_by_feed(
-                amount=amount_interact,
-                randomize=True,
-                unfollow=True,
-                interact=True)
-
-    def follow(self, amount=35):
-        with smart_run(self.session, threaded=True):
-            target_followers = []
-
-            f = open(self.filtered_file).readlines()
-            for _ in range(0, amount):
-                user = f.pop(0).replace('\n', '')
-                target_followers.append(user)
-
-            with open(self.filtered_file, 'w', encoding='UTF-8') as F:
-                F.writelines(f)
-
-            with open(self.interacted_file, 'a', encoding='UTF-8') as f:
-                for el in target_followers:
-                    f.write(el + "\n")
-
-            self.session.set_simulation(enabled=True, percentage=66)
-            self.session.set_do_story(enabled=True, percentage=100,
-                                      simulate=True)
-            self.session.set_do_like(True, percentage=55)
-            self.session.follow_by_list(followlist=target_followers, times=1,
-                                        sleep_delay=600, interact=True)
-
-    def unfollow(self, amount_unf=60):
-        with smart_run(self.session, threaded=True):
-            self.session.unfollow_users(
-                amount=amount_unf,
-                allFollowing=True,
-                style="FIFO",
-                unfollow_after=3*60*60,
-                sleep_delay=450)
-
-    def full_parse_followers(self):
-        with smart_run(self.session, threaded=True):
-            target_accounts = [config.account]
-            for account in target_accounts:
-                followers_file = self.here + "\\" + \
-                    "manager" + "\\" + \
-                    os.getenv("INSTA_USERNAME") + "\\" + \
-                    config.PARSE_FOLDER.replace("/", "\\") + \
-                    config.account + "_followers.txt"
-
-                f = open(followers_file, 'w', encoding='UTF-8')
-                target_followers = self.session.grab_followers(
-                    username=account,
-                    amount="full",
-                    live_match=False,
-                    store_locally=False)
-
-                for el in target_followers:
-                    f.write(el + "\n")
-
-                f.close()
-
-
+# разобратсья с путями
 class NoLoginActions:
 
     def __init__(self):
@@ -190,41 +23,44 @@ class NoLoginActions:
             str(os.getenv("INSTA_USERNAME")) + "\\" +
             str(config.MANAGER_FILE))
         self.parse_file = os.path.join(
-            self.here, "\\",
-            "manager", "\\",
-            str(os.getenv("INSTA_USERNAME")), "\\",
-            str(config.PARSE_FOLDER),
-            str(config.account), "_followers.txt")
+            self.here + "\\" +
+            "manager" + "\\" +
+            str(os.getenv("INSTA_USERNAME")) + "\\" +
+            str(config.PARSE_FOLDER) +
+            str(config.accounts) + "_followers.txt")
         self.filtered_file = os.path.join(
-            self.here, "\\",
-            "manager", "\\",
-            str(os.getenv("INSTA_USERNAME")), "\\",
-            str(config.FILTER_FOLDER),
-            str(config.account), "_filtered.txt")
+            self.here + "\\" +
+            "manager" + "\\" +
+            str(os.getenv("INSTA_USERNAME")) + "\\" +
+            str(config.FILTER_FOLDER) +
+            str(config.accounts) + "_filtered.txt")
         self.interacted_file = os.path.join(
-            self.here, "\\",
-            "manager", "\\",
-            str(os.getenv("INSTA_USERNAME")), "\\",
+            self.here + "\\" +
+            "manager" + "\\" +
+            str(os.getenv("INSTA_USERNAME")) + "\\" +
             "interacted.txt")
 
         # proxy = {"https": "https://LOGIN:PASSWORD@IP:PORT"}
         self.proxy = None
 
     def __manager_add(self, key, value):
-        with open(self.manager_file, "r", encoding='UTF-8') as file_manager:
-            data = json.load(file_manager)
+        # with open(self.manager_file, "r", encoding='UTF-8') as file_manager:
+        #     data = json.load(file_manager)
 
-        data[os.getenv("INSTA_USERNAME")][key].append(value)
+        # data[os.getenv("INSTA_USERNAME")][key].append(value)
 
-        with open(self.manager_file, "w", encoding='UTF-8') \
-                as file_manager_w:
-            json.dump(data, file_manager_w)
+        # with open(self.manager_file, "w", encoding='UTF-8') \
+        #         as file_manager_w:
+        #     json.dump(data, file_manager_w)
 
-    def __check_user(self, username,
-                     skip_words=[],
-                     non_skip_business_categories=[],
-                     skip_private=True
-                     ):
+        pass
+
+    # regina.fish - не сработало БИО
+    def check_user(self, username,
+                   skip_words=[],
+                   non_skip_business_categories=[],
+                   skip_private=True
+                   ):
 
         min_followers = 50
         max_followers = 10000
@@ -396,7 +232,7 @@ class NoLoginActions:
 
                 local_check_user = None
                 try:
-                    local_check_user = self.__check_user(
+                    local_check_user = self.check_user(
                         username,
                         config.skip_bio_keyword,
                         config.person_categories,
@@ -428,11 +264,241 @@ class NoLoginActions:
                 time.sleep(random.randint(60, 300))
 
 
+class Actions:
+
+    def __init__(self):
+        self.here = os.path.abspath(os.path.dirname(__file__))
+        self.dotenv_path = os.path.join(
+            os.path.dirname(__file__), '..', '.env')
+        if os.path.exists(self.dotenv_path):
+            load_dotenv(self.dotenv_path)
+        self.path_to_manager_folder = os.path.join(
+            self.here + "\\" +
+            "manager" + "\\" +
+            str(os.getenv("INSTA_USERNAME")) + "\\")
+        self.interacted_file = os.path.join(
+            self.path_to_manager_folder +
+            str(config.INTERACTED_FILE))
+
+        set_workspace(path=self.path_to_manager_folder)
+        proxy = {
+            "username": str(os.getenv("PROXY_LOGIN")),
+            "password": str(os.getenv("PROXY_PASSWORD")),
+            "address": str(os.getenv("PROXY_IP")),
+            "port": str(os.getenv("PROXY_PORT"))
+        }
+        proxy = None
+
+        if bool(proxy):
+            self.session = InstaPy(
+                username=str(os.getenv("INSTA_USERNAME")),
+                password=str(os.getenv("INSTA_PASSWORD")),
+                headless_browser=False,
+                bypass_security_challenge_using='sms',
+                disable_image_load=True,
+                want_check_browser=True,
+                proxy_username=proxy["username"],
+                proxy_password=proxy["password"],
+                proxy_address=proxy["address"],
+                proxy_port=proxy["port"])
+            input("\nВведите Логин и Пароль для прокси," +
+                  "введите любую клавишу и нажмите Enter")
+        else:
+            self.session = InstaPy(
+                username=str(os.getenv("INSTA_USERNAME")),
+                password=str(os.getenv("INSTA_PASSWORD")),
+                headless_browser=config.HEADLESS_BROWSER_BOOL,
+                bypass_security_challenge_using='sms',
+                want_check_browser=True)
+
+        self.session.set_dont_include(config.exclude_accaunts)
+        self.session.set_relationship_bounds(
+            enabled=True,
+            max_followers=8500,
+            max_following=4490,
+            min_followers=40,
+            min_following=40,
+            min_posts=1,
+            max_posts=2000)
+        self.session.set_quota_supervisor(
+            enabled=True,
+            sleep_after=["likes",
+                         "comments_d",
+                         "follows",
+                         "unfollows",
+                         "server_calls_h"],
+            sleepyhead=True,
+            stochastic_flow=True,
+            notify_me=True,
+            peak_likes_hourly=57,
+            peak_likes_daily=585,
+            peak_comments_hourly=21,
+            peak_comments_daily=182,
+            peak_follows_hourly=48,
+            peak_follows_daily=238,
+            peak_unfollows_hourly=35,
+            peak_unfollows_daily=402,
+            peak_server_calls_hourly=None,
+            peak_server_calls_daily=4700)
+        self.session.set_action_delays(
+            enabled=True,
+            like=8,
+            comment=5,
+            follow=4.17,
+            unfollow=28,
+            story=10)
+        self.session.set_skip_users(
+            skip_private=False,
+            private_percentage=100,
+            skip_no_profile_pic=True,
+            no_profile_pic_percentage=100,
+            skip_business=True,
+            skip_non_business=False,
+            business_percentage=100,
+            skip_business_categories=[],
+            dont_skip_business_categories=config.person_categories,
+            skip_bio_keyword=config.skip_bio_keyword,
+            mandatory_bio_keywords=[])
+        self.session.set_mandatory_language(
+            enabled=True,
+            character_set=['CYRILLIC'])
+
+    def interact_by_feed(self, amount_interact=50):
+        with smart_run(self.session, threaded=True):
+            self.session.set_do_story(
+                enabled=True,
+                percentage=95,
+                simulate=True)
+            self.session.like_by_feed(
+                amount=amount_interact,
+                randomize=True,
+                unfollow=True,
+                interact=True)
+
+    def follow(self, username, amount=35):
+        target_followers = []
+        filtered_file = os.path.join(
+            self.path_to_manager_folder +
+            str(config.FILTER_FOLDER) +
+            username + "_filtered.txt")
+
+        with smart_run(self.session, threaded=True):
+
+            f = open(filtered_file).readlines()
+            for _ in range(0, amount):
+                user = f.pop(0).replace('\n', '')
+                target_followers.append(user)
+
+            with open(filtered_file, 'w', encoding='UTF-8') as F:
+                F.writelines(f)
+
+            with open(self.interacted_file, 'a', encoding='UTF-8') as f:
+                for el in target_followers:
+                    f.write(el + "\n")
+
+            self.session.set_simulation(enabled=True, percentage=66)
+            self.session.set_do_story(enabled=True, percentage=100,
+                                      simulate=True)
+            self.session.set_do_like(True, percentage=55)
+            self.session.follow_by_list(followlist=target_followers, times=1,
+                                        sleep_delay=600, interact=True)
+
+    def unfollow(self, amount_unf=60):
+        with smart_run(self.session, threaded=True):
+            self.session.unfollow_users(
+                amount=amount_unf,
+                allFollowing=True,
+                style="FIFO",
+                unfollow_after=3*60*60,
+                sleep_delay=450)
+
+    def full_parse_followers(self):
+
+        path_to_manager_file = os.path.join(
+            self.path_to_manager_folder + config.MANAGER_FILE
+        )
+
+        with open(path_to_manager_file, "r", encoding='UTF-8') as file_manager:
+            data = json.load(file_manager)
+            print(data[str(os.getenv("INSTA_USERNAME"))]["donor_accounts"][1]["username"])
+
+        # print(config.accounts)
+        # print(config.target_accaunts[0])
+        # print(config.target_accaunts[1])
+
+
+        # проверить наличие базы
+        # проверить число актуальных пдп
+
+
+
+        # with smart_run(self.session, threaded=True):
+        #     target_accounts = [config.accounts]
+        #     target_accounts = ["karnavalwithlove"]
+        #     for account in target_accounts:
+        #         followers_file = self.path_to_manager_folder + \
+        #             config.PARSE_FOLDER + \
+        #             account + "_followers.txt"
+
+        #         f = open(followers_file, 'w', encoding='UTF-8')
+        #         target_followers = self.session.grab_followers(
+        #             username=account,
+        #             amount=10,
+        #             live_match=False,
+        #             store_locally=True)
+
+        #         for el in target_followers:
+        #             f.write(el + "\n")
+
+        #         f.close()
+
+
+    def follow_actual_users(self):
+        with smart_run(self.session, threaded=True):
+            parsed_followers = []
+            target_accaunts = ["aiz_str", "_margo.97"]
+
+            for user in target_accaunts:
+                print("Now parsing username: ", user)
+                parsed = self.session.grab_followers(
+                    username=user,
+                    amount="full",
+                    live_match=False,
+                    store_locally=True)
+
+                parsed_followers.append(parsed)
+            parsed_followers = sum(parsed_followers, [])
+
+            nl_actions = NoLoginActions()
+            filtered_followers = []
+
+            for user in parsed_followers:
+                ret = nl_actions.check_user(
+                    user,
+                    config.skip_bio_keyword,
+                    config.person_categories,
+                    False)
+
+                if ret is not None:
+                    filtered_followers.append(ret)
+
+                time.sleep(random.randint(3, 10))
+
+            print(len(filtered_followers))
+            print(filtered_followers)
+
+            # сравнить с прошлой базой подписчиков
+
+            # follow ()
+
+
 if __name__ == "__main__":
 
     actions = Actions()
 
-    actions.follow(35)
-    actions.unfollow(35)
+    # actions.follow(35)
+    # actions.unfollow(35)
+    # actions.follow_actual_users()
+    actions.full_parse_followers()
 
-    del actions
+    # del actions

@@ -1,12 +1,18 @@
 import os
+import ast
 from dotenv import load_dotenv
 
-PROGRAM_VERSION = '2'
+PROGRAM_VERSION = '2.1'
+
+FILTER_FOLDER = "FILTER\\"
+PARSE_FOLDER = "PARSE\\"
+MANAGER_FILE = "manager.json"
+INTERACTED_FILE = "interacted.txt"
+STATISTIK_FILE = "statistik.txt"
 
 dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
 if os.path.exists(dotenv_path):
     load_dotenv(dotenv_path)
-
 
 if os.getenv("HEADLESS_BROWSER") == "True":
     HEADLESS_BROWSER_BOOL = True
@@ -15,14 +21,8 @@ elif os.getenv("HEADLESS_BROWSER") == "False":
 else:
     HEADLESS_BROWSER_BOOL = False
 
-
-FILTER_FOLDER = "FILTER\\"
-PARSE_FOLDER = "PARSE\\"
-INTERACTED_FILE = "interacted.txt"
-MANAGER_FILE = "manager.json"
-
-account = os.getenv("TARGET_ACCOUNT")
-target_accaunts = [account]
+accounts = str(os.getenv("TARGET_ACCOUNTS"))
+target_accaunts = ast.literal_eval(accounts)
 exclude_accaunts = []
 
 skip_name_keywords = [
