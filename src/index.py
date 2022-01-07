@@ -1,19 +1,42 @@
-from dotenv import load_dotenv
-from instapy import InstaPy
 import datetime
-import src.actions as actions
-import src.config as config
-import os
+
+if __name__ == "src.index":
+    import src.actions as actions
+    import src.config as config
 
 
 def menu():
-    print("INSTAGRAM AUTOMATION\n")
+    print(f"INSTAGRAM AUTOMATION v{config.PROGRAM_VERSION}\n")
 
-    
+    config.get_all_usernames()
+    account_number = input("Choose an account: ")
+
+    config.set_account_variables(int(account_number))
+    # choose account -> [info - paid days] start, settings, back
+
+    time_now = datetime.datetime.now()
+    time_stop = datetime.datetime(2022, 1, 27)
+    today_date = time_now.strftime("%d.%m.%Y")
+
+    if time_now < time_stop:
+        delta_str = str(time_stop - time_now).replace("day,", "день,") \
+                                             .replace("days,", "дней,")
+        delta_str = delta_str[:delta_str.find(".")]
+
+        print("\nСегодня: " + today_date, end='')
+        print(". У Вас осталось оплаченного времени: " + delta_str)
+    else:
+        print("У вас не осталось оплаченного времени")
+        input("Закройте программу")
+        exit()
 
 
 def main():
 
+    menu()
+
+    time_now = datetime.datetime.now()
+    day_of_month = time_now.strftime("%d")
     inst_actions = actions.Actions()
     # nologin_actions = actions.NoLoginActions()
 
@@ -34,39 +57,10 @@ def main():
         print("Liking feed")
         inst_actions.interact_by_feed()
 
-    time_now = datetime.datetime.now()
-    day_of_month = time_now.strftime("%d")
-    time_stop = datetime.datetime(2022, 1, 27)
-    today_date = time_now.strftime("%d.%m.%Y")
-
-    if time_now < time_stop:
-        delta_str = str(time_stop - time_now).replace("day,", "день,") \
-                                             .replace("days,", "дней,")
-        delta_str = delta_str[:delta_str.find(".")]
-        print("Автоматизация Инстаграм", end='')
-        print(". Версия: " + config.PROGRAM_VERSION)
-        print("Сегодня: " + today_date, end='')
-        print(". У Вас осталось оплаченного времени: " + delta_str)
-
-        dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
-        if os.path.exists(dotenv_path):
-            load_dotenv(dotenv_path)
-
-        session = InstaPy(username=os.getenv("INSTA_USERNAME"),
-                          password=os.getenv("INSTA_PASSWORD"),
-                          headless_browser=bool(os.getenv("HEADLESS_BROWSER")),
-                          bypass_security_challenge_using='sms',
-                          want_check_browser=True)
-
-    else:
-        print("У вас не осталось оплаченного времени")
-        input("Закройте программу")
-        exit()
-
     if day_of_month == "01" or \
        day_of_month == "20" or \
        day_of_month == "29":
-        day_type_one(session)
+        day_type_one()
 
     if day_of_month == "02" or \
        day_of_month == "06" or \
@@ -77,7 +71,7 @@ def main():
        day_of_month == "23" or \
        day_of_month == "25":
         day_type_two()
-        day_type_three(session)
+        day_type_three()
 
     if day_of_month == "03" or \
        day_of_month == "04" or \
@@ -95,18 +89,21 @@ def main():
        day_of_month == "28" or \
        day_of_month == "30" or \
        day_of_month == "31":
-        day_type_one(session)
+        day_type_one()
 
     if day_of_month == "07" or \
        day_of_month == "13" or \
        day_of_month == "21" or \
        day_of_month == "27":
         day_type_two()
-        day_type_four(session)
+        day_type_four()
 
     del inst_actions
     # del nologin_actions
 
 
 if __name__ == "__main__":
+    import actions
+    import config
+
     main()

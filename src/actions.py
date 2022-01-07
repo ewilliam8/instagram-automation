@@ -1,16 +1,19 @@
+if __name__ == "src.actions":
+    import src.config as config
+if __name__ == "__main__":
+    import config
+
 import os
 import time
 import json
 import random
 import datetime
 import requests
-import src.config as config
 
 from bs4 import BeautifulSoup
 from instapy import InstaPy
 from instapy import smart_run
 from instapy import set_workspace
-from dotenv import load_dotenv
 
 
 # разобратсья с путями
@@ -21,24 +24,24 @@ class NoLoginActions:
         self.manager_file = os.path.join(
             self.here + "\\" +
             "manager" + "\\" +
-            str(os.getenv("INSTA_USERNAME")) + "\\" +
-            str(config.MANAGER_FILE))
+            config.insta_username + "\\" +
+            config.MANAGER_FILE)
         self.parse_file = os.path.join(
             self.here + "\\" +
             "manager" + "\\" +
-            str(os.getenv("INSTA_USERNAME")) + "\\" +
+            config.insta_username + "\\" +
             str(config.PARSE_FOLDER) +
             str(config.accounts) + "_followers.txt")
         self.filtered_file = os.path.join(
             self.here + "\\" +
             "manager" + "\\" +
-            str(os.getenv("INSTA_USERNAME")) + "\\" +
+            config.insta_username + "\\" +
             str(config.FILTER_FOLDER) +
             str(config.accounts) + "_filtered.txt")
         self.interacted_file = os.path.join(
             self.here + "\\" +
             "manager" + "\\" +
-            str(os.getenv("INSTA_USERNAME")) + "\\" +
+            config.insta_username + "\\" +
             "interacted.txt")
 
         # proxy = {"https": "https://LOGIN:PASSWORD@IP:PORT"}
@@ -279,15 +282,13 @@ class NoLoginActions:
 class Actions:
 
     def __init__(self):
+
+        # check config is set user !!!!!!!!!!!!!!!!
         self.here = os.path.abspath(os.path.dirname(__file__))
-        self.dotenv_path = os.path.join(
-            os.path.dirname(__file__), '..', '.env')
-        if os.path.exists(self.dotenv_path):
-            load_dotenv(self.dotenv_path)
         self.path_to_manager_folder = os.path.join(
             self.here + "\\" +
             "manager" + "\\" +
-            str(os.getenv("INSTA_USERNAME")) + "\\")
+            config.insta_username + "\\")
         self.interacted_file = os.path.join(
             self.path_to_manager_folder +
             str(config.INTERACTED_FILE))
@@ -295,33 +296,27 @@ class Actions:
             self.path_to_manager_folder + config.MANAGER_FILE)
 
         set_workspace(path=self.path_to_manager_folder)
-        # self.proxy = {
-        #     "username": str(os.getenv("PROXY_LOGIN")),
-        #     "password": str(os.getenv("PROXY_PASSWORD")),
-        #     "address": str(os.getenv("PROXY_IP")),
-        #     "port": str(os.getenv("PROXY_PORT"))
-        # }
-        self.proxy = None
 
-        if bool(self.proxy):
+        if config.proxy_ip is not None:
             self.session = InstaPy(
-                username=str(os.getenv("INSTA_USERNAME")),
-                password=str(os.getenv("INSTA_PASSWORD")),
+                username=config.insta_username,
+                password=config.insta_password,
+                proxy_port=config.proxy_port,
+                proxy_address=config.proxy_ip,
+                proxy_username=config.proxy_login,
+                proxy_password=config.proxy_password,
                 headless_browser=False,
                 bypass_security_challenge_using='sms',
                 disable_image_load=True,
-                want_check_browser=True,
-                proxy_username=self.proxy["username"],
-                proxy_password=self.proxy["password"],
-                proxy_address=self.proxy["address"],
-                proxy_port=self.proxy["port"])
-            input("\nВведите Логин и Пароль для прокси," +
+                want_check_browser=True)
+            print("\nВведите Логин и Пароль для прокси," +
                   "введите любую клавишу и нажмите Enter")
+            input(f"LOGIN: {config.proxy_login}\n" +
+                  f"PASSWORD: {config.proxy_password}\n")
         else:
             self.session = InstaPy(
-                username=str(os.getenv("INSTA_USERNAME")),
-                password=str(os.getenv("INSTA_PASSWORD")),
-                headless_browser=config.HEADLESS_BROWSER_BOOL,
+                username=config.insta_username,
+                password=config.insta_password,
                 bypass_security_challenge_using='sms',
                 want_check_browser=True)
 
@@ -428,7 +423,7 @@ class Actions:
                 percentage=45,
                 media='Photo')
             self.session.follow_user_followers(
-                config.target_accaunts,
+                config.target_accounts,
                 amount=35,
                 interact=True,
                 randomize=False)
@@ -447,8 +442,12 @@ class Actions:
         def check_account_followers(username):
             url = f'https://www.instagram.com/{username}/'
             headers = config.request_headers
-            if self.proxy is not None:
-                r = requests.get(url, headers=headers, proxies=self.proxy)
+
+            if config.proxy_ip is not None:
+                proxy = {"https": f"https://{config.proxy_login}:" +
+                         "{config.proxy_password}@{config.proxy_ip}:" +
+                         "{config.proxy_port}"}
+                r = requests.get(url, headers=headers, proxies=proxy)
             else:
                 r = requests.get(url, headers=headers)
 

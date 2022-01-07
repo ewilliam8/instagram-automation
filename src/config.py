@@ -1,8 +1,7 @@
-import os
-import ast
-from dotenv import load_dotenv
+from os import path
+import json
 
-PROGRAM_VERSION = '2.4'
+PROGRAM_VERSION = '2.5'
 
 FILTER_FOLDER = "FILTER\\"
 PARSE_FOLDER = "PARSE\\"
@@ -10,22 +9,53 @@ MANAGER_FILE = "manager.json"
 INTERACTED_FILE = "interacted.txt"
 ACCOUNTS_FILE = "accounts.json"
 
-request_headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)\
-    AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36'}
+insta_username = None
+insta_password = None
+key = None
+proxy_ip = None
+proxy_port = None
+proxy_login = None
+proxy_password = None
+target_accounts = None
 
-dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
-if os.path.exists(dotenv_path):
-    load_dotenv(dotenv_path)
+request_headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' +
+                   'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664' +
+                   '.110 Safari/537.36'}
+here = path.abspath(path.dirname(__file__))
 
-if os.getenv("HEADLESS_BROWSER") == "True":
-    HEADLESS_BROWSER_BOOL = True
-elif os.getenv("HEADLESS_BROWSER") == "False":
-    HEADLESS_BROWSER_BOOL = False
-else:
-    HEADLESS_BROWSER_BOOL = False
+accounts_file_path = path.join(here + "\\" + ACCOUNTS_FILE)
 
-accounts = str(os.getenv("TARGET_ACCOUNTS"))
-target_accaunts = ast.literal_eval(accounts)
+with open(accounts_file_path, "r", encoding='UTF-8') as accounts_file:
+    DATA = data = json.load(accounts_file)
+
+
+def get_all_usernames():
+    for index, username in enumerate(DATA, start=1):
+        print(f"{index} ", end='')
+        print(username["INSTA_USERNAME"])
+
+
+def set_account_variables(account_number):
+    account_number -= 1
+    global insta_username
+    global insta_password
+    global key
+    global proxy_ip
+    global proxy_port
+    global proxy_login
+    global proxy_password
+    global target_accounts
+
+    insta_username = DATA[account_number]["INSTA_USERNAME"]
+    insta_password = DATA[account_number]["INSTA_PASSWORD"]
+    key = DATA[account_number]["KEY"]
+    proxy_ip = DATA[account_number]["PROXY_IP"]
+    proxy_port = DATA[account_number]["PROXY_PORT"]
+    proxy_login = DATA[account_number]["PROXY_LOGIN"]
+    proxy_password = DATA[account_number]["PROXY_PASSWORD"]
+    target_accounts = DATA[account_number]["TARGET_ACCOUNTS"]
+
+
 exclude_accaunts = []
 
 skip_name_keywords = [
