@@ -3,6 +3,7 @@ import time
 import json
 import random
 import config
+import datetime
 import requests
 
 from bs4 import BeautifulSoup
@@ -43,6 +44,12 @@ class NoLoginActions:
         # proxy = {"https": "https://LOGIN:PASSWORD@IP:PORT"}
         self.proxy = None
 
+    def __print_info(self, to_print):
+        time_now = datetime.datetime.now()
+        today_date = time_now.strftime("%Y-%m-%d %H:%M:%S")
+        username = str(os.getenv("INSTA_USERNAME"))
+        print(f"INFO [{today_date}] [{username}]  {to_print}")
+
     def __manager_add(self, key, value):
         # with open(self.manager_file, "r", encoding='UTF-8') as file_manager:
         #     data = json.load(file_manager)
@@ -78,12 +85,12 @@ class NoLoginActions:
                 n -= 1
             return start
 
-        print(f"\n--> Checking {username}")
+        self.__print_info(f"\n--> Checking {username}")
 
         # check by username
         for skip_word in config.skip_name_keywords:
             if username.find(skip_word) != -1:
-                print(f"× The user has a name with: {skip_word}")
+                self.__print_info(f"× The user has a name with: {skip_word}")
                 return None
 
         # check with already interacted users
@@ -93,14 +100,12 @@ class NoLoginActions:
             interacted_users[index] = elem[:-1]
 
         if username in interacted_users:
-            print(f"× The user has been already interacted")
+            self.__print_info(f"× The user has been already interacted")
             return None
 
         # --- SERVER CALL ---
         url = f'https://www.instagram.com/{username}/'
-        headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)\
-        AppleWebKit/537.36 (KHTML, like Gecko) \
-        Chrome/96.0.4664.110 Safari/537.36'}
+        headers = headers = config.request_headers
         if self.proxy is not None:
             r = requests.get(url, headers=headers, proxies=self.proxy)
         else:
@@ -154,17 +159,18 @@ class NoLoginActions:
 
         # Ограничения по подписчикам, подпискам и кол-во постов
         if followers < min_followers or followers > max_followers:
-            print(
+            self.__print_info(
               f"× The user has unacceptable amount of followers: {followers}")
             return None
 
         if following < min_following or following > max_following:
-            print(
+            self.__print_info(
               f"× The user has unacceptable amount of following: {following}")
             return None
 
         if posts < min_posts or posts > max_posts:
-            print(f"The user has unacceptable amount of posts: {posts}")
+            self.__print_info(
+                f"The user has unacceptable amount of posts: {posts}")
             return None
 
         # Бизнес аккаунт
@@ -179,7 +185,8 @@ class NoLoginActions:
                     .decode('unicode_escape')
 
             if business_category not in non_skip_business_categories:
-                print(f"× It's a business account: {business_category}")
+                self.__print_info(
+                    f"× It's a business account: {business_category}")
                 return None
 
         # Приватный аккаунт?
@@ -187,7 +194,7 @@ class NoLoginActions:
             bio_and_desc.find("is_private"):
             bio_and_desc.find("is_verified")][12:-2]
         if is_private == 'true' and skip_private:
-            print("× User skipped by private account")
+            self.__print_info("× User skipped by private account")
             return None
 
         # Слова в имени и био
@@ -198,20 +205,23 @@ class NoLoginActions:
 
             if name.find(word) != -1 and \
                     name_decoded.find(word) != -1:
-                print(f"× User skipped by keyword in Name: {word_to_print}")
+                self.__print_info(
+                    f"× User skipped by keyword in Name: {word_to_print}")
                 return None
 
             if biography.find(word) != -1 and \
                     biography_decoded.find(word) != -1:
-                print(f"× User skipped by keyword in Bio: {word_to_print}")
+                self.__print_info(
+                    f"× User skipped by keyword in Bio: {word_to_print}")
                 return None
 
             if biography_extra.find(word) != -1 and \
                     biography_extra_decoded.find(word) != -1:
-                print(f"× User skipped by keyword in Bio: {word_to_print}")
+                self.__print_info(
+                    f"× User skipped by keyword in Bio: {word_to_print}")
                 return None
 
-        print("+ Added to a list")
+        self.__print_info("+ Added to a list")
         return username
 
     def filter(self, amount=9):
@@ -239,17 +249,18 @@ class NoLoginActions:
                         False)
                 except Exception as ex:
                     exception_occurred += 1
-                    print("An exception occurred")
-                    print(ex)
+                    self.__print_info("An exception occurred")
+                    self.__print_info(ex)
 
                     if exception_occurred >= 5:
-                        print("\n\nSome problems with Instagram!\n")
-                        print("Close the program\n")
+                        self.__print_info(
+                            "\n\nSome problems with Instagram!\n")
+                        self.__print_info("Close the program\n")
                         exit()
 
                 if local_check_user is not None:
                     filtered_accounts.append(local_check_user)
-                    print(filtered_accounts)
+                    self.__print_info(filtered_accounts)
 
                 time.sleep(random.randint(1, 5))
 
@@ -258,9 +269,10 @@ class NoLoginActions:
                 for el in filtered_accounts:
                     f.write(el + "\n")
 
-            print(f"\n~~ Users checked [{(gi + 1) * 10}/{amount * 10}]")
+            self.__print_info(
+                f"\n~~ Users checked [{(gi + 1) * 10}/{amount * 10}]")
             if (gi + 1) != amount:
-                print("~~ Sleeping between 1 and 5 minutes")
+                self.__print_info("~~ Sleeping between 1 and 5 minutes")
                 time.sleep(random.randint(60, 300))
 
 
@@ -279,17 +291,19 @@ class Actions:
         self.interacted_file = os.path.join(
             self.path_to_manager_folder +
             str(config.INTERACTED_FILE))
+        self.path_to_manager_file = os.path.join(
+            self.path_to_manager_folder + config.MANAGER_FILE)
 
         set_workspace(path=self.path_to_manager_folder)
-        proxy = {
+        self.proxy = {
             "username": str(os.getenv("PROXY_LOGIN")),
             "password": str(os.getenv("PROXY_PASSWORD")),
             "address": str(os.getenv("PROXY_IP")),
             "port": str(os.getenv("PROXY_PORT"))
         }
-        proxy = None
+        # self.proxy = None
 
-        if bool(proxy):
+        if bool(self.proxy):
             self.session = InstaPy(
                 username=str(os.getenv("INSTA_USERNAME")),
                 password=str(os.getenv("INSTA_PASSWORD")),
@@ -297,10 +311,10 @@ class Actions:
                 bypass_security_challenge_using='sms',
                 disable_image_load=True,
                 want_check_browser=True,
-                proxy_username=proxy["username"],
-                proxy_password=proxy["password"],
-                proxy_address=proxy["address"],
-                proxy_port=proxy["port"])
+                proxy_username=self.proxy["username"],
+                proxy_password=self.proxy["password"],
+                proxy_address=self.proxy["address"],
+                proxy_port=self.proxy["port"])
             input("\nВведите Логин и Пароль для прокси," +
                   "введите любую клавишу и нажмите Enter")
         else:
@@ -363,7 +377,9 @@ class Actions:
             enabled=True,
             character_set=['CYRILLIC'])
 
-    def interact_by_feed(self, amount_interact=50):
+    # функция по работе с manager файлом
+
+    def interact_by_feed(self, amount_interact=40):
         with smart_run(self.session, threaded=True):
             self.session.set_do_story(
                 enabled=True,
@@ -400,8 +416,22 @@ class Actions:
             self.session.set_do_story(enabled=True, percentage=100,
                                       simulate=True)
             self.session.set_do_like(True, percentage=55)
-            self.session.follow_by_list(followlist=target_followers, times=1,
+            self.session.follow_by_list(target_followers, times=1,
                                         sleep_delay=600, interact=True)
+
+    # исправить название
+    def follow_user_followers(self):
+        with smart_run(self.session, threaded=True):
+            self.session.set_user_interact(
+                amount=1,
+                randomize=True,
+                percentage=45,
+                media='Photo')
+            self.session.follow_user_followers(
+                config.target_accaunts,
+                amount=35,
+                interact=True,
+                randomize=False)
 
     def unfollow(self, amount_unf=60):
         with smart_run(self.session, threaded=True):
@@ -412,61 +442,132 @@ class Actions:
                 unfollow_after=3*60*60,
                 sleep_delay=450)
 
-    def full_parse_followers(self):
+    def choose_accounts(self):
 
-        path_to_manager_file = os.path.join(
-            self.path_to_manager_folder + config.MANAGER_FILE
-        )
+        def check_account_followers(username):
+            url = f'https://www.instagram.com/{username}/'
+            headers = config.request_headers
+            if self.proxy is not None:
+                r = requests.get(url, headers=headers, proxies=self.proxy)
+            else:
+                r = requests.get(url, headers=headers)
 
-        with open(path_to_manager_file, "r", encoding='UTF-8') as file_manager:
+            soup = BeautifulSoup(r.text, 'lxml')
+            follows_name_posts = str(soup.find_all("meta")[13])
+            followers = follows_name_posts.split(" ")[1][9:]
+
+            return followers
+
+        accounts_to_parse = []
+
+        with open(self.path_to_manager_file,
+                  "r", encoding='UTF-8') as file_manager:
             data = json.load(file_manager)
-            print(data[str(os.getenv("INSTA_USERNAME"))]["donor_accounts"][1]["username"])
+        data_m = data
 
-        # print(config.accounts)
-        # print(config.target_accaunts[0])
-        # print(config.target_accaunts[1])
+        time_now = datetime.datetime.now()
+        today_date = time_now.strftime("%Y-%m-%d")
 
+        for index, user in enumerate(data_m["donor_accounts"], start=0):
+            username = user["username"]
+            user_followers = check_account_followers(username)
+            user_followers = user_followers.replace(",", "")
 
-        # проверить наличие базы
-        # проверить число актуальных пдп
+            if user_followers.find('k') == -1 and \
+               user_followers.find('m') == -1:
+                user_followers = int(user_followers)
 
+            data_user_followers = \
+                data["donor_accounts"][index]["count_followers"]
 
+            if isinstance(data_user_followers, int) and \
+               isinstance(user_followers, int):
 
-        # with smart_run(self.session, threaded=True):
-        #     target_accounts = [config.accounts]
-        #     target_accounts = ["karnavalwithlove"]
-        #     for account in target_accounts:
-        #         followers_file = self.path_to_manager_folder + \
-        #             config.PARSE_FOLDER + \
-        #             account + "_followers.txt"
+                if user_followers > data_user_followers:
+                    data_m["donor_accounts"][index]["count_followers"] = \
+                        user_followers
+                    data_m["donor_accounts"][index]["date"] = today_date
+                    accounts_to_parse.append(username)
 
-        #         f = open(followers_file, 'w', encoding='UTF-8')
-        #         target_followers = self.session.grab_followers(
-        #             username=account,
-        #             amount=10,
-        #             live_match=False,
-        #             store_locally=True)
+            if isinstance(data_user_followers, str) and \
+                    isinstance(user_followers, int):
+                continue
 
-        #         for el in target_followers:
-        #             f.write(el + "\n")
+            elif isinstance(data_user_followers, int) and \
+                    isinstance(user_followers, str):
+                data_m["donor_accounts"][index]["count_followers"] = \
+                        user_followers
+                data_m["donor_accounts"][index]["date"] = today_date
+                accounts_to_parse.append(username)
 
-        #         f.close()
+            else:
+                if data_user_followers != user_followers:
+                    data_m["donor_accounts"][index]["count_followers"] = \
+                        user_followers
+                    data_m["donor_accounts"][index]["date"] = today_date
+                    accounts_to_parse.append(username)
 
+            self.session.logger.info(
+                f'"{username}" has \t{user_followers} followers')
+            time.sleep(random.randint(5, 15))
+
+        with open(self.path_to_manager_file,
+                  "w", encoding='UTF-8') as file_manager:
+            json.dump(data_m, file_manager, indent=4)
+
+        return set(accounts_to_parse)
 
     def follow_actual_users(self):
-        with smart_run(self.session, threaded=True):
-            parsed_followers = []
-            target_accaunts = ["aiz_str", "_margo.97"]
+        parsed_followers = []
+        target_accaunts = self.choose_accounts()
+        self.session.logger.info("Now parsing these accounts: " +
+                                 str(target_accaunts)[1:-1])
 
+        with smart_run(self.session, threaded=True):
             for user in target_accaunts:
-                print("Now parsing username: ", user)
+                self.session.logger.info(f"Now parsing username: {user}")
                 parsed = self.session.grab_followers(
                     username=user,
                     amount="full",
                     live_match=False,
                     store_locally=True)
 
-                parsed_followers.append(parsed)
+                # сохранить данные в PARSE/ user_followers.txt
+                followers_file_path = os.path.join(
+                    self.path_to_manager_folder + config.PARSE_FOLDER +
+                    "\\" + user + "_followers.txt")
+
+                if not os.path.exists(followers_file_path):
+                    with open(followers_file_path,
+                              'w', encoding='UTF-8') as f:
+                        for el in parsed:
+                            f.write(el + "\n")
+                else:
+                    # сравниваем списки
+                    followers_list = open(followers_file_path).readlines()
+                    difference = list(set(parsed) - set(followers_list))
+
+                    # сравним и добавим разницу в массив
+                    parsed_followers.append(difference)
+
+                    # добавить в manager в actual_interacted
+                    with open(self.path_to_manager_file, "r",
+                              encoding='UTF-8') as file_manager:
+                        data = json.load(file_manager)
+
+                    data["actual_interacted"] = \
+                        sum(data["actual_interacted"].append(difference), [])
+
+                    with open(self.path_to_manager_file,
+                              "w", encoding='UTF-8') as file_manager:
+                        json.dump(data, file_manager, indent=4)
+
+                    # обновить файл с подписками
+                    with open(followers_file_path,
+                              'w', encoding='UTF-8') as f:
+                        for el in parsed:
+                            f.write(el + "\n")
+
             parsed_followers = sum(parsed_followers, [])
 
             nl_actions = NoLoginActions()
@@ -484,12 +585,28 @@ class Actions:
 
                 time.sleep(random.randint(3, 10))
 
-            print(len(filtered_followers))
-            print(filtered_followers)
-
-            # сравнить с прошлой базой подписчиков
+            self.session.logger.info(len(filtered_followers))
+            self.session.logger.info(filtered_followers)
 
             # follow ()
+
+    def grab_user_followers(self, user):
+        with smart_run(self.session, threaded=True):
+            self.session.logger.info(f"Now parsing username: {user}")
+            parsed = self.session.grab_followers(
+                username=user,
+                amount="full",
+                live_match=False,
+                store_locally=True)
+
+            # сохранить данные в PARSE/ user_followers.txt
+            followers_file_path = os.path.join(
+                self.path_to_manager_folder + config.PARSE_FOLDER +
+                "\\" + user + "_followers.txt")
+
+            with open(followers_file_path, 'w', encoding='UTF-8') as f:
+                for el in parsed:
+                    f.write(el + "\n")
 
 
 if __name__ == "__main__":
@@ -499,6 +616,7 @@ if __name__ == "__main__":
     # actions.follow(35)
     # actions.unfollow(35)
     # actions.follow_actual_users()
-    actions.full_parse_followers()
+    # actions.interact_by_feed()
+    actions.follow_user_followers()
 
-    # del actions
+    del actions

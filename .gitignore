@@ -7,3 +7,5 @@ InstaPy
 geckodriver.log
 .env
 test.py
+Dockerfile
+.env keng

@@ -2,13 +2,16 @@ import os
 import ast
 from dotenv import load_dotenv
 
-PROGRAM_VERSION = '2.1'
+PROGRAM_VERSION = '2.3'
 
 FILTER_FOLDER = "FILTER\\"
 PARSE_FOLDER = "PARSE\\"
 MANAGER_FILE = "manager.json"
 INTERACTED_FILE = "interacted.txt"
-STATISTIK_FILE = "statistik.txt"
+STATISTICS_FILE = "statistics.txt"
+
+request_headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)\
+    AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36'}
 
 dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
 if os.path.exists(dotenv_path):
@@ -39,9 +42,8 @@ skip_name_keywords = [
     "bizhyteriya", "massage", "dietolog", "hlopok", "news", "dress", "recepti",
     "tekstile", "_nails", "_studio", "uslugi", "center", "oriflame", "sale",
     "style", "mp3", "support", "sport", "podelki", "kuhni", "remont",
-    "komfort", "fincontrol"]
+    "komfort", "fincontrol", "insta"]
 
-# "www.", "https",
 skip_bio_keyword = [
     "бесплатно", "доставка", "Бесплатно", "Доставка", "ДИРЕКТ", "директ",
     "Одежда", "ОДЕЖДА", "одежда", "в наличии", "В наличии", "В НАЛИЧИИ",
@@ -73,7 +75,9 @@ skip_bio_keyword = [
     "поддержки", "WA/TGRAM", "ОБУЧЕНИЕ", "LEBEL", "FABULOSO", "REDKEN",
     "лайфхаки", "крутые видео", "Поделки", "Нумеролог", "Изготовление",
     "изготовление", "support", "Support", "Ремонт", "ремонт", "РЕМОНТ",
-    "ЗАКАЗАТЬ", "МОТИВАТОР", "франшиза"]
+    "ЗАКАЗАТЬ", "МОТИВАТОР", "франшиза", "Кератин", "кератин", "КЕРАТИН",
+    "Целевая", "целевая", "аудитория", "создание", "Создание", "Сайт", "сайт",
+    "Настольные игры", "настольные игры", "18+"]
 
 person_categories = [
     "Architectural Designer", "Artist", "Athlete", "Creators & Celebrities",

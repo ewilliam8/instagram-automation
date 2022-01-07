@@ -1,6 +1,6 @@
-import src.index as index
+from src.index import *
 
 try:
-    index.main()
+    main()
 except Exception as ex:
     print(ex)

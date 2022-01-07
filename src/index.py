@@ -9,15 +9,16 @@ import os
 def main():
 
     inst_actions = actions.Actions()
-    nologin_actions = actions.NoLoginActions()
+    # nologin_actions = actions.NoLoginActions()
 
     def day_type_one():
         print("Follow")
-        inst_actions.follow(35)
+        inst_actions.follow_user_followers()
 
     def day_type_two():
         print("Filtering a base")
-        nologin_actions.filter()
+        # nologin_actions.filter()
+        inst_actions.follow_user_followers()
 
     def day_type_three():
         print("Unfollowing")
@@ -98,7 +99,7 @@ def main():
         day_type_four(session)
 
     del inst_actions
-    del nologin_actions
+    # del nologin_actions
 
 
 if __name__ == "__main__":
