@@ -1,4 +1,4 @@
-from src.index import *
+from src.index import main
 
 try:
     main()

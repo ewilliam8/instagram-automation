@@ -1,4 +1,3 @@
-from logging import StrFormatStyle
 import os
 import sys
 import json
@@ -18,7 +17,7 @@ interacted_file_path = path_to_storage_username + config.INTERACTED_FILE
 parse_folder__path = path_to_storage_username + config.PARSE_FOLDER
 filter_folder_path = path_to_storage_username + config.FILTER_FOLDER
 manager_file_path = path_to_storage_username + config.MANAGER_FILE
-statistics_file_path = path_to_storage_username + config.STATISTICS_FILE
+accounts_file_path = os.path.join(here + "\\src\\" + config.ACCOUNTS_FILE)
 
 
 def readall(*args):
@@ -55,9 +54,6 @@ if not os.path.isdir(filter_folder_path):
 if not os.path.exists(interacted_file_path):
     open(interacted_file_path, "w", encoding='UTF-8').close()
 
-if not os.path.exists(statistics_file_path):
-    open(statistics_file_path, "w", encoding='UTF-8').close()
-
 if not os.path.exists(manager_file_path):
     with open(manager_file_path, "w", encoding='UTF-8') as file_manager:
 
@@ -71,8 +67,6 @@ if not os.path.exists(manager_file_path):
 
         data = {
             "PROGRAM_VERSION": config.PROGRAM_VERSION,
-            "INSTA_USERNAME": os.getenv("INSTA_USERNAME"),
-            "INSTA_PASSWORD": os.getenv("INSTA_PASSWORD"),
             "donor_accounts": donor_accounts,
             "actual_interacted": []
             # "messaged": [],
@@ -82,6 +76,71 @@ if not os.path.exists(manager_file_path):
 
 with open("requirements.txt") as f:
     dependencies = f.read().splitlines()
+
+# - - - SET ACCOUNT(S) - - -
+if not os.path.exists(accounts_file_path):
+    with open(accounts_file_path, "w", encoding='UTF-8') as accounts_file:
+        print("INSTAGRAM AUTOMATION - SETUP\n")
+        DATA = []
+
+        count_accounts = "None"
+        while not count_accounts.isdigit():
+            count_accounts = input("How many accounts do you want to input?: ")
+        count_accounts = int(count_accounts)
+        print()
+
+        for user in range(0, count_accounts):
+            print(f"|>  Input of data for User {user + 1} is open")
+
+            # LOGIN, PASSWORD, KEY
+            INSTA_USERNAME = input("INSTAGRAM USERNAME:\t")
+            INSTA_PASSWORD = input("INSTAGRAM PASSWORD:\t")
+            KEY = input("INSTAGRAM AUTOMATION KEY:\t")
+            print()
+
+            # PROXY
+            is_proxy = input("Do you use proxy [Y/n]: ")
+            if is_proxy == 'Y' or \
+               is_proxy == 'y':
+                PROXY_IP = input("PROXY IP:\t")
+                PROXY_PORT = input("PROXY PORT:\t")
+                PROXY_LOGIN = input("PROXY LOGIN:\t")
+                PROXY_PASSWORD = input("PROXY PASSWORD:\t")
+            else:
+                PROXY_IP = None
+                PROXY_PORT = None
+                PROXY_LOGIN = None
+                PROXY_PASSWORD = None
+            print()
+
+            # TARGET ACCOUNTS
+            TARGET_ACCOUNTS = []
+            count_target_accounts = "None"
+            while not count_target_accounts.isdigit():
+                count_target_accounts = input(
+                    "How many target accounts do you want to input?: ")
+            count_target_accounts = int(count_target_accounts)
+
+            for ta in range(0, count_target_accounts):
+                print("Input target account " +
+                      f"[{ta+1}/{count_target_accounts}]: ", end="")
+                TARGET_ACCOUNTS.append(input())
+
+            DATA.append({
+                "INSTA_USERNAME": INSTA_USERNAME,
+                "INSTA_PASSWORD": INSTA_PASSWORD,
+                "KEY": KEY,
+                "PROXY_IP": PROXY_IP,
+                "PROXY_PORT": PROXY_PORT,
+                "PROXY_LOGIN": PROXY_LOGIN,
+                "PROXY_PASSWORD": PROXY_PASSWORD,
+                "TARGET_ACCOUNTS": TARGET_ACCOUNTS
+            })
+
+            print(f"|>  Input of data for User {user + 1} is closed\n\n")
+
+        json.dump(DATA, accounts_file, indent=4)
+
 
 documentation = readall("README.md")
 print(documentation)

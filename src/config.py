@@ -2,13 +2,13 @@ import os
 import ast
 from dotenv import load_dotenv
 
-PROGRAM_VERSION = '2.3'
+PROGRAM_VERSION = '2.4'
 
 FILTER_FOLDER = "FILTER\\"
 PARSE_FOLDER = "PARSE\\"
 MANAGER_FILE = "manager.json"
 INTERACTED_FILE = "interacted.txt"
-STATISTICS_FILE = "statistics.txt"
+ACCOUNTS_FILE = "accounts.json"
 
 request_headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)\
     AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36'}

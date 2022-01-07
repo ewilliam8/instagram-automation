@@ -6,6 +6,6 @@ InstaPy
 .vscode
 geckodriver.log
 .env
-test.py
+test_features.py
 Dockerfile
-.env keng
+accounts.json

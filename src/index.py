@@ -1,9 +1,15 @@
 from dotenv import load_dotenv
 from instapy import InstaPy
 import datetime
-import actions
-import config
+import src.actions as actions
+import src.config as config
 import os
+
+
+def menu():
+    print("INSTAGRAM AUTOMATION\n")
+
+    
 
 
 def main():

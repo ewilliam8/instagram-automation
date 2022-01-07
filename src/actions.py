@@ -2,9 +2,9 @@ import os
 import time
 import json
 import random
-import config
 import datetime
 import requests
+import src.config as config
 
 from bs4 import BeautifulSoup
 from instapy import InstaPy
@@ -295,13 +295,13 @@ class Actions:
             self.path_to_manager_folder + config.MANAGER_FILE)
 
         set_workspace(path=self.path_to_manager_folder)
-        self.proxy = {
-            "username": str(os.getenv("PROXY_LOGIN")),
-            "password": str(os.getenv("PROXY_PASSWORD")),
-            "address": str(os.getenv("PROXY_IP")),
-            "port": str(os.getenv("PROXY_PORT"))
-        }
-        # self.proxy = None
+        # self.proxy = {
+        #     "username": str(os.getenv("PROXY_LOGIN")),
+        #     "password": str(os.getenv("PROXY_PASSWORD")),
+        #     "address": str(os.getenv("PROXY_IP")),
+        #     "port": str(os.getenv("PROXY_PORT"))
+        # }
+        self.proxy = None
 
         if bool(self.proxy):
             self.session = InstaPy(
@@ -614,9 +614,9 @@ if __name__ == "__main__":
     actions = Actions()
 
     # actions.follow(35)
-    # actions.unfollow(35)
+    actions.unfollow(65)
     # actions.follow_actual_users()
     # actions.interact_by_feed()
-    actions.follow_user_followers()
+    # actions.follow_user_followers()
 
     del actions
