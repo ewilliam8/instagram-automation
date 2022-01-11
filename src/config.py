@@ -1,7 +1,7 @@
 from os import path
 import json
 
-PROGRAM_VERSION = '2.5'
+PROGRAM_VERSION = '2.8'
 
 FILTER_FOLDER = "FILTER\\"
 PARSE_FOLDER = "PARSE\\"
@@ -30,9 +30,13 @@ with open(accounts_file_path, "r", encoding='UTF-8') as accounts_file:
 
 
 def get_all_usernames():
+    len = 1
     for index, username in enumerate(DATA, start=1):
         print(f"{index} ", end='')
         print(username["INSTA_USERNAME"])
+        len += 1
+
+    return len
 
 
 def set_account_variables(account_number):
@@ -72,7 +76,7 @@ skip_name_keywords = [
     "bizhyteriya", "massage", "dietolog", "hlopok", "news", "dress", "recepti",
     "tekstile", "_nails", "_studio", "uslugi", "center", "oriflame", "sale",
     "style", "mp3", "support", "sport", "podelki", "kuhni", "remont",
-    "komfort", "fincontrol", "insta"]
+    "komfort", "fincontrol", "insta", "boutique", "psycholog"]
 
 skip_bio_keyword = [
     "бесплатно", "доставка", "Бесплатно", "Доставка", "ДИРЕКТ", "директ",
@@ -107,7 +111,8 @@ skip_bio_keyword = [
     "изготовление", "support", "Support", "Ремонт", "ремонт", "РЕМОНТ",
     "ЗАКАЗАТЬ", "МОТИВАТОР", "франшиза", "Кератин", "кератин", "КЕРАТИН",
     "Целевая", "целевая", "аудитория", "создание", "Создание", "Сайт", "сайт",
-    "Настольные игры", "настольные игры", "18+"]
+    "Настольные игры", "настольные игры", "18+", "АСИКИ", "МАЙНЕРЫ", "майнеры",
+    "Майнеры", "Асики", "асики", "брокер"]
 
 person_categories = [
     "Architectural Designer", "Artist", "Athlete", "Creators & Celebrities",

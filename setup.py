@@ -26,7 +26,6 @@ def readall(*args):
 
 
 if not sys.version_info.major and sys.version_info.minor:
-
     print("Python 3.9.7 or higher is required.")
     print("You are using Python {}.{}.{}".format(
         sys.version_info.major,

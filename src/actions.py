@@ -26,18 +26,6 @@ class NoLoginActions:
             "manager" + "\\" +
             config.insta_username + "\\" +
             config.MANAGER_FILE)
-        self.parse_file = os.path.join(
-            self.here + "\\" +
-            "manager" + "\\" +
-            config.insta_username + "\\" +
-            str(config.PARSE_FOLDER) +
-            str(config.accounts) + "_followers.txt")
-        self.filtered_file = os.path.join(
-            self.here + "\\" +
-            "manager" + "\\" +
-            config.insta_username + "\\" +
-            str(config.FILTER_FOLDER) +
-            str(config.accounts) + "_filtered.txt")
         self.interacted_file = os.path.join(
             self.here + "\\" +
             "manager" + "\\" +
@@ -50,7 +38,7 @@ class NoLoginActions:
     def __print_info(self, to_print):
         time_now = datetime.datetime.now()
         today_date = time_now.strftime("%Y-%m-%d %H:%M:%S")
-        username = str(os.getenv("INSTA_USERNAME"))
+        username = config.insta_username
         print(f"INFO [{today_date}] [{username}]  {to_print}")
 
     def __manager_add(self, key, value):
@@ -65,7 +53,6 @@ class NoLoginActions:
 
         pass
 
-    # regina.fish - не сработало БИО
     def check_user(self, username,
                    skip_words=[],
                    non_skip_business_categories=[],
@@ -76,7 +63,7 @@ class NoLoginActions:
         max_followers = 10000
         min_following = 50
         max_following = 10000
-        min_posts = 1
+        min_posts = 0
         max_posts = 2000
 
         self.__manager_add("already_filtered", username)
@@ -88,7 +75,8 @@ class NoLoginActions:
                 n -= 1
             return start
 
-        self.__print_info(f"\n--> Checking {username}")
+        print()
+        self.__print_info(f"|> Checking {username}")
 
         # check by username
         for skip_word in config.skip_name_keywords:
@@ -160,7 +148,7 @@ class NoLoginActions:
             .encode("utf-16", "surrogatepass") \
             .decode("utf-16", "surrogatepass")
 
-        # Ограничения по подписчикам, подпискам и кол-во постов
+        # Limits on subscribers, subscriptions and number of posts
         if followers < min_followers or followers > max_followers:
             self.__print_info(
               f"× The user has unacceptable amount of followers: {followers}")
@@ -176,7 +164,7 @@ class NoLoginActions:
                 f"The user has unacceptable amount of posts: {posts}")
             return None
 
-        # Бизнес аккаунт
+        # Business account
         is_business = bio_and_desc[
             bio_and_desc.find("is_business_account"):
             bio_and_desc.find("is_professional_account")][21:-2]
@@ -192,7 +180,7 @@ class NoLoginActions:
                     f"× It's a business account: {business_category}")
                 return None
 
-        # Приватный аккаунт?
+        # Private account?
         is_private = bio_and_desc[
             bio_and_desc.find("is_private"):
             bio_and_desc.find("is_verified")][12:-2]
@@ -200,7 +188,7 @@ class NoLoginActions:
             self.__print_info("× User skipped by private account")
             return None
 
-        # Слова в имени и био
+        # Words in name and bio
         for word in skip_words:
             word_to_print = word
             word = str(word.encode("unicode_escape"))\
@@ -227,7 +215,20 @@ class NoLoginActions:
         self.__print_info("+ Added to a list")
         return username
 
-    def filter(self, amount=9):
+    def filter(self, username, amount=9):
+        self.filtered_file = os.path.join(
+            self.here + "\\" +
+            "manager" + "\\" +
+            config.insta_username + "\\" +
+            str(config.FILTER_FOLDER) +
+            username + "_filtered.txt")
+        self.parse_file = os.path.join(
+            self.here + "\\" +
+            "manager" + "\\" +
+            config.insta_username + "\\" +
+            str(config.PARSE_FOLDER) +
+            username + "_followers.txt")
+
         for gi in range(0, amount):
 
             accounts_to_check = []
@@ -272,8 +273,9 @@ class NoLoginActions:
                 for el in filtered_accounts:
                     f.write(el + "\n")
 
+            print()
             self.__print_info(
-                f"\n~~ Users checked [{(gi + 1) * 10}/{amount * 10}]")
+                f"~~ Users checked [{(gi + 1) * 10}/{amount * 10}]")
             if (gi + 1) != amount:
                 self.__print_info("~~ Sleeping between 1 and 5 minutes")
                 time.sleep(random.randint(60, 300))
@@ -283,7 +285,10 @@ class Actions:
 
     def __init__(self):
 
-        # check config is set user !!!!!!!!!!!!!!!!
+        if config.insta_username is None:
+            print("The user has not been chosen")
+            exit()
+
         self.here = os.path.abspath(os.path.dirname(__file__))
         self.path_to_manager_folder = os.path.join(
             self.here + "\\" +
@@ -386,6 +391,8 @@ class Actions:
                 unfollow=True,
                 interact=True)
 
+        return self
+
     def follow(self, username, amount=35):
         target_followers = []
         filtered_file = os.path.join(
@@ -414,6 +421,8 @@ class Actions:
             self.session.follow_by_list(target_followers, times=1,
                                         sleep_delay=600, interact=True)
 
+        return self
+
     # исправить название
     def follow_user_followers(self):
         with smart_run(self.session, threaded=True):
@@ -428,6 +437,8 @@ class Actions:
                 interact=True,
                 randomize=False)
 
+        return self
+
     def unfollow(self, amount_unf=60):
         with smart_run(self.session, threaded=True):
             self.session.unfollow_users(
@@ -436,6 +447,8 @@ class Actions:
                 style="FIFO",
                 unfollow_after=3*60*60,
                 sleep_delay=450)
+
+        return self
 
     def choose_accounts(self):
 
@@ -589,6 +602,13 @@ class Actions:
 
             # follow ()
 
+        return self
+
+    def follow_actual_users_2(self):
+        with smart_run(self.session, threaded=True):
+            last_followers = self.session.get_last_followers()
+            pass
+
     def grab_user_followers(self, user):
         with smart_run(self.session, threaded=True):
             self.session.logger.info(f"Now parsing username: {user}")
@@ -607,15 +627,58 @@ class Actions:
                 for el in parsed:
                     f.write(el + "\n")
 
+        return self
+
 
 if __name__ == "__main__":
 
-    actions = Actions()
+    print(f"INSTAGRAM AUTOMATION v{config.PROGRAM_VERSION}\n")
 
-    # actions.follow(35)
-    actions.unfollow(65)
-    # actions.follow_actual_users()
-    # actions.interact_by_feed()
-    # actions.follow_user_followers()
+    count_usernames = config.get_all_usernames()
+    if count_usernames != 1:
+        account_number = input("Choose an account: ")
+        config.set_account_variables(int(account_number))
+    else:
+        config.set_account_variables(1)
+
+    print("\n1) follow 35")
+    print("2) unfollow 65")
+    print("3) follow actual users")
+    print("4) interact by feed")
+    print("5) follow user followers")
+    print("6) grab user followers")
+    print("7) filter user followers")
+    action_numb = int(input("Choose an action: "))
+
+    if action_numb == 1:
+        actions = Actions()
+        actions.follow(35)
+
+    if action_numb == 2:
+        actions = Actions()
+        actions.unfollow(65)
+
+    if action_numb == 3:
+        actions = Actions()
+        actions.follow_actual_users()
+
+    if action_numb == 4:
+        actions = Actions()
+        actions.interact_by_feed()
+
+    if action_numb == 5:
+        actions = Actions()
+        actions.follow_user_followers()
+
+    if action_numb == 6:
+        actions = Actions()
+        username = input("\nUsername to grab ALL followers: ")
+        actions.grab_user_followers(username)
+
+    if action_numb == 7:
+        nl_actions = NoLoginActions()
+        username = input("\nUsername to grab ALL followers: ")
+        number = int(input("Number to filter subscribers: "))
+        nl_actions.filter(username, number)
 
     del actions

@@ -4,14 +4,20 @@ if __name__ == "src.index":
     import src.actions as actions
     import src.config as config
 
+if __name__ == "__main__":
+    import actions
+    import config
+
 
 def menu():
     print(f"INSTAGRAM AUTOMATION v{config.PROGRAM_VERSION}\n")
 
-    config.get_all_usernames()
-    account_number = input("Choose an account: ")
-
-    config.set_account_variables(int(account_number))
+    count_usernames = config.get_all_usernames()
+    if count_usernames != 1:
+        account_number = input("Choose an account: ")
+        config.set_account_variables(int(account_number))
+    else:
+        config.set_account_variables(1)
     # choose account -> [info - paid days] start, settings, back
 
     time_now = datetime.datetime.now()
@@ -103,7 +109,5 @@ def main():
 
 
 if __name__ == "__main__":
-    import actions
-    import config
 
     main()
