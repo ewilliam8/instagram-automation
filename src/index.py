@@ -1,4 +1,7 @@
 import datetime
+import tkinter as tk
+from tkinter import ttk
+from tkinter.constants import DISABLED
 
 if __name__ == "src.index":
     import src.actions as actions
@@ -9,11 +12,61 @@ if __name__ == "__main__":
     import config
 
 
+def gui_menu():
+
+    win = tk.Tk()
+    icon = tk.PhotoImage(file=config.ICON_PATH)
+    BACKGROUND_COLOR = "#E8EFF1"
+    FONT_COLOR = "#202324"
+
+    win.config(bg=BACKGROUND_COLOR)
+    win.iconphoto(False, icon)
+    win.title(f"INSTAGRAM AUTOMATION v{config.PROGRAM_VERSION}")
+    win.geometry("350x400+200+100")
+    win.resizable(False, False)
+
+    usernames = config.get_all_usernames()
+    if len(usernames) == 0:
+        label_1 = tk.Label(win, text=f"Аккаунт не установлен",
+                           bg=BACKGROUND_COLOR,
+                           fg=FONT_COLOR,
+                           pady=5,
+                           padx=3)
+        label_1.grid(column=0, row=0)
+    elif len(usernames) == 1:
+        label_1 = tk.Label(win, text=f"Аккаунт: {usernames[0]}",
+                           bg=BACKGROUND_COLOR,
+                           fg=FONT_COLOR,
+                           pady=5,
+                           padx=3)
+        label_1.grid(column=0, row=0)
+        config.set_account_variables(1)
+    else:
+        label_1 = tk.Label(win, text="Выберете аккаунт",
+                           bg=BACKGROUND_COLOR,
+                           fg=FONT_COLOR,
+                           pady=5,
+                           padx=3)
+        label_1.grid(column=0, row=0)
+        comboBox = ttk.Combobox(win, values=usernames)
+        comboBox.current(0)
+        comboBox.grid(column=0, row=1, ipady=2)
+
+        apply_btn = tk.Button(text="Применить",
+                              command=lambda: comboBox.config(state=DISABLED))
+        apply_btn.grid(column=1, row=1, padx=5)
+
+    win.mainloop()
+
+
 def menu():
     print(f"INSTAGRAM AUTOMATION v{config.PROGRAM_VERSION}\n")
 
-    count_usernames = config.get_all_usernames()
-    if count_usernames != 1:
+    usernames = config.get_all_usernames()
+    if len(usernames) != 1:
+        for index, username in enumerate(usernames, start=1):
+            print(f"{index} ", end='')
+            print(username)
         account_number = input("Choose an account: ")
         config.set_account_variables(int(account_number))
     else:
@@ -110,4 +163,5 @@ def main():
 
 if __name__ == "__main__":
 
-    main()
+    # main()
+    gui_menu()

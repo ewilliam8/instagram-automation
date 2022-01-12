@@ -8,6 +8,7 @@ PARSE_FOLDER = "PARSE\\"
 MANAGER_FILE = "manager.json"
 INTERACTED_FILE = "interacted.txt"
 ACCOUNTS_FILE = "accounts.json"
+# ICON_PATH = path.join("../img/icon.png")
 
 insta_username = None
 insta_password = None
@@ -23,20 +24,20 @@ request_headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' +
                    '.110 Safari/537.36'}
 here = path.abspath(path.dirname(__file__))
 
+BASE_DIR = path.join(path.dirname(__file__), '..')
 accounts_file_path = path.join(here + "\\" + ACCOUNTS_FILE)
+ICON_PATH = path.join(BASE_DIR + "\\img\\icon.png")
 
 with open(accounts_file_path, "r", encoding='UTF-8') as accounts_file:
-    DATA = data = json.load(accounts_file)
+    DATA = json.load(accounts_file)
 
 
 def get_all_usernames():
-    len = 1
+    usernames = []
     for index, username in enumerate(DATA, start=1):
-        print(f"{index} ", end='')
-        print(username["INSTA_USERNAME"])
-        len += 1
+        usernames.append(username["INSTA_USERNAME"])
 
-    return len
+    return usernames
 
 
 def set_account_variables(account_number):

@@ -444,7 +444,7 @@ class Actions:
             self.session.unfollow_users(
                 amount=amount_unf,
                 allFollowing=True,
-                style="FIFO",
+                style="LIFO",
                 unfollow_after=3*60*60,
                 sleep_delay=450)
 
@@ -634,8 +634,11 @@ if __name__ == "__main__":
 
     print(f"INSTAGRAM AUTOMATION v{config.PROGRAM_VERSION}\n")
 
-    count_usernames = config.get_all_usernames()
-    if count_usernames != 1:
+    usernames = config.get_all_usernames()
+    if len(usernames) != 1:
+        for index, username in enumerate(usernames, start=1):
+            print(f"{index} ", end='')
+            print(username)
         account_number = input("Choose an account: ")
         config.set_account_variables(int(account_number))
     else:
