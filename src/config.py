@@ -1,14 +1,13 @@
 from os import path
 import json
 
-PROGRAM_VERSION = '2.8'
+PROGRAM_VERSION = '2.9'
 
 FILTER_FOLDER = "FILTER\\"
 PARSE_FOLDER = "PARSE\\"
 MANAGER_FILE = "manager.json"
 INTERACTED_FILE = "interacted.txt"
 ACCOUNTS_FILE = "accounts.json"
-# ICON_PATH = path.join("../img/icon.png")
 
 insta_username = None
 insta_password = None
@@ -22,10 +21,11 @@ target_accounts = None
 request_headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' +
                    'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664' +
                    '.110 Safari/537.36'}
+
 here = path.abspath(path.dirname(__file__))
+accounts_file_path = path.join(here + "\\" + ACCOUNTS_FILE)
 
 BASE_DIR = path.join(path.dirname(__file__), '..')
-accounts_file_path = path.join(here + "\\" + ACCOUNTS_FILE)
 ICON_PATH = path.join(BASE_DIR + "\\img\\icon.png")
 
 with open(accounts_file_path, "r", encoding='UTF-8') as accounts_file:
@@ -40,7 +40,7 @@ def get_all_usernames():
     return usernames
 
 
-def set_account_variables(account_number):
+def set_account_variables(account_number: int):
     account_number -= 1
     global insta_username
     global insta_password

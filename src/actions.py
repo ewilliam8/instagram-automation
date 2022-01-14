@@ -1,6 +1,6 @@
 if __name__ == "src.actions":
     import src.config as config
-if __name__ == "__main__":
+else:
     import config
 
 import os
@@ -379,7 +379,7 @@ class Actions:
 
     # функция по работе с manager файлом
 
-    def interact_by_feed(self, amount_interact=40):
+    def interact_by_feed(self, amount_interact: int = 40):
         with smart_run(self.session, threaded=True):
             self.session.set_do_story(
                 enabled=True,
@@ -393,7 +393,7 @@ class Actions:
 
         return self
 
-    def follow(self, username, amount=35):
+    def follow(self, username, amount: int = 35):
         target_followers = []
         filtered_file = os.path.join(
             self.path_to_manager_folder +
@@ -439,7 +439,7 @@ class Actions:
 
         return self
 
-    def unfollow(self, amount_unf=60):
+    def unfollow(self, amount_unf: int = 60):
         with smart_run(self.session, threaded=True):
             self.session.unfollow_users(
                 amount=amount_unf,
@@ -606,7 +606,7 @@ class Actions:
 
     def follow_actual_users_2(self):
         with smart_run(self.session, threaded=True):
-            last_followers = self.session.get_last_followers()
+            self.session.follow_actual_user_followers(["skycode_school"])
             pass
 
     def grab_user_followers(self, user):

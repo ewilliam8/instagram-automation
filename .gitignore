@@ -9,3 +9,11 @@ geckodriver.log
 test_features.py
 Dockerfile
 accounts.json
+main.cmd
+main.exe
+main.build
+main.dist
+main.spec
+main.onefile-build
+build
+dist
