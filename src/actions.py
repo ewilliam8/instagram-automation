@@ -41,18 +41,6 @@ class NoLoginActions:
         username = config.insta_username
         print(f"INFO [{today_date}] [{username}]  {to_print}")
 
-    def __manager_add(self, key, value):
-        # with open(self.manager_file, "r", encoding='UTF-8') as file_manager:
-        #     data = json.load(file_manager)
-
-        # data[os.getenv("INSTA_USERNAME")][key].append(value)
-
-        # with open(self.manager_file, "w", encoding='UTF-8') \
-        #         as file_manager_w:
-        #     json.dump(data, file_manager_w)
-
-        pass
-
     def check_user(self, username,
                    skip_words=[],
                    non_skip_business_categories=[],
@@ -65,8 +53,6 @@ class NoLoginActions:
         max_following = 10000
         min_posts = 0
         max_posts = 2000
-
-        self.__manager_add("already_filtered", username)
 
         def find_nth(haystack, needle, n):
             start = haystack.find(needle)
@@ -377,8 +363,16 @@ class Actions:
             enabled=True,
             character_set=['CYRILLIC'])
 
-    # функция по работе с manager файлом
+    def _manager_get_data(self):
+        with open(self.path_to_manager_file, "r", encoding='UTF-8') as file:
+            data = json.load(file)
+        return data
 
+    def _manager_set_data(self, new_data):
+        with open(self.path_to_manager_file,
+                  "w", encoding='UTF-8') as file_manager:
+            json.dump(new_data, file_manager, indent=4)
+    
     def interact_by_feed(self, amount_interact: int = 40):
         with smart_run(self.session, threaded=True):
             self.session.set_do_story(
@@ -423,7 +417,6 @@ class Actions:
 
         return self
 
-    # исправить название
     def follow_user_followers(self):
         with smart_run(self.session, threaded=True):
             self.session.set_user_interact(
@@ -472,9 +465,8 @@ class Actions:
 
         accounts_to_parse = []
 
-        with open(self.path_to_manager_file,
-                  "r", encoding='UTF-8') as file_manager:
-            data = json.load(file_manager)
+        
+        data = self._manager_get_data()
         data_m = data
 
         time_now = datetime.datetime.now()
@@ -523,9 +515,7 @@ class Actions:
                 f'"{username}" has \t{user_followers} followers')
             time.sleep(random.randint(5, 15))
 
-        with open(self.path_to_manager_file,
-                  "w", encoding='UTF-8') as file_manager:
-            json.dump(data_m, file_manager, indent=4)
+        self._manager_set_data(data_m)
 
         return set(accounts_to_parse)
 
@@ -563,16 +553,12 @@ class Actions:
                     parsed_followers.append(difference)
 
                     # добавить в manager в actual_interacted
-                    with open(self.path_to_manager_file, "r",
-                              encoding='UTF-8') as file_manager:
-                        data = json.load(file_manager)
+                    data = self._manager_get_data()
 
                     data["actual_interacted"] = \
                         sum(data["actual_interacted"].append(difference), [])
 
-                    with open(self.path_to_manager_file,
-                              "w", encoding='UTF-8') as file_manager:
-                        json.dump(data, file_manager, indent=4)
+                    self._manager_set_data(data)
 
                     # обновить файл с подписками
                     with open(followers_file_path,
