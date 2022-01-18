@@ -16,7 +16,6 @@ from instapy import smart_run
 from instapy import set_workspace
 
 
-# разобратсья с путями
 class NoLoginActions:
 
     def __init__(self):
@@ -31,6 +30,18 @@ class NoLoginActions:
             "manager" + "\\" +
             config.insta_username + "\\" +
             "interacted.txt")
+        self.filtered_file = os.path.join(
+            self.here + "\\" +
+            "manager" + "\\" +
+            config.insta_username + "\\" +
+            str(config.FILTER_FOLDER) +
+            username + "_filtered.txt")
+        self.parse_file = os.path.join(
+            self.here + "\\" +
+            "manager" + "\\" +
+            config.insta_username + "\\" +
+            str(config.PARSE_FOLDER) +
+            username + "_followers.txt")
 
         # proxy = {"https": "https://LOGIN:PASSWORD@IP:PORT"}
         self.proxy = None
@@ -202,19 +213,6 @@ class NoLoginActions:
         return username
 
     def filter(self, username, amount=9):
-        self.filtered_file = os.path.join(
-            self.here + "\\" +
-            "manager" + "\\" +
-            config.insta_username + "\\" +
-            str(config.FILTER_FOLDER) +
-            username + "_filtered.txt")
-        self.parse_file = os.path.join(
-            self.here + "\\" +
-            "manager" + "\\" +
-            config.insta_username + "\\" +
-            str(config.PARSE_FOLDER) +
-            username + "_followers.txt")
-
         for gi in range(0, amount):
 
             accounts_to_check = []
@@ -390,8 +388,8 @@ class Actions:
     def follow(self, username, amount: int = 35):
         target_followers = []
         filtered_file = os.path.join(
-            self.path_to_manager_folder +
-            str(config.FILTER_FOLDER) +
+            self.path_to_manager_folder + "\\" +
+            str(config.FILTER_FOLDER) + "\\" +
             username + "_filtered.txt")
 
         with smart_run(self.session, threaded=True):
@@ -590,11 +588,6 @@ class Actions:
 
         return self
 
-    def follow_actual_users_2(self):
-        with smart_run(self.session, threaded=True):
-            self.session.follow_actual_user_followers(["skycode_school"])
-            pass
-
     def grab_user_followers(self, user):
         with smart_run(self.session, threaded=True):
             self.session.logger.info(f"Now parsing username: {user}")
@@ -615,6 +608,10 @@ class Actions:
 
         return self
 
+    def just_open(self):
+        with smart_run(self.session, threaded=True):
+            self.session.get_actual_followers()
+            input()
 
 if __name__ == "__main__":
 
@@ -637,11 +634,13 @@ if __name__ == "__main__":
     print("5) follow user followers")
     print("6) grab user followers")
     print("7) filter user followers")
+    print("8) just open")
     action_numb = int(input("Choose an action: "))
 
     if action_numb == 1:
+        filtered_list_username = input("Input username of filtered base: ")
         actions = Actions()
-        actions.follow(35)
+        actions.follow(filtered_list_username, 35)
 
     if action_numb == 2:
         actions = Actions()
@@ -669,5 +668,9 @@ if __name__ == "__main__":
         username = input("\nUsername to grab ALL followers: ")
         number = int(input("Number to filter subscribers: "))
         nl_actions.filter(username, number)
+
+    if action_numb == 8:
+        actions = Actions()
+        actions.just_open()
 
     del actions
