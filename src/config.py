@@ -1,7 +1,7 @@
 from os import path
 import json
 
-PROGRAM_VERSION = '2.9'
+PROGRAM_VERSION = '2.11'
 
 FILTER_FOLDER = "FILTER\\"
 PARSE_FOLDER = "PARSE\\"
@@ -24,6 +24,10 @@ request_headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' +
 
 here = path.abspath(path.dirname(__file__))
 accounts_file_path = path.join(here + "\\" + ACCOUNTS_FILE)
+path_to_manager_folder = path.join(
+        here + "\\" + "manager" + "\\" +
+        insta_username + "\\"
+    )
 
 BASE_DIR = path.join(path.dirname(__file__), '..')
 ICON_PATH = path.join(BASE_DIR + "\\img\\icon.png")

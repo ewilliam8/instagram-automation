@@ -7,4 +7,5 @@ Use proxy (https) for 2+ accounts.
 
 ## Setup
 To install requirements use
-`pip install -r requirements.txt`
+`pip install -r requirements.txt`.
+Add features in the library Instapy from folder "instapy changed files"

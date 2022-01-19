@@ -376,6 +376,36 @@ class Actions:
                   "w", encoding='UTF-8') as file_manager:
             json.dump(new_data, file_manager, indent=4)
     
+    def _add_interacted_users(self, new_users):
+        if not isinstance(new_users, list):
+            new_users = [new_users]
+
+        interacted_users = open(self.interacted_file,
+            'r', encoding='UTF-8').readlines()
+
+        for user in new_users:
+            interacted_users.append(user)
+
+        # remove duplicates
+        index = 1
+        while index < len(interacted_users):
+            if interacted_users[index] in interacted_users[:index]:
+                interacted_users.pop(index)
+            else:
+                index += 1
+
+        with open(self.interacted_file, 'a', encoding='UTF-8') as f:
+            for el in interacted_users:
+                f.write(el + "\n")
+
+        return self
+
+    def _get_interacted_users(self):
+        interacted_users = open(self.interacted_file,
+            'r', encoding='UTF-8').readlines()
+
+        return interacted_users
+
     def interact_by_feed(self, amount_interact: int = 40):
         with smart_run(self.session, threaded=True):
             self.session.set_do_story(
@@ -446,7 +476,12 @@ class Actions:
 
         return self
 
-    def choose_accounts(self):
+    # rewrite
+    def _choose_accounts(self):
+        """
+        The function choose accounts by date
+        return: list of accounts to get actual followers
+        """
 
         def check_account_followers(username):
             url = f'https://www.instagram.com/{username}/'
@@ -522,78 +557,6 @@ class Actions:
 
         return set(accounts_to_parse)
 
-    # delete
-    def old_follow_actual_users(self):
-        parsed_followers = []
-        target_accaunts = self.choose_accounts()
-        self.session.logger.info("Now parsing these accounts: " +
-                                 str(target_accaunts)[1:-1])
-
-        with smart_run(self.session, threaded=True):
-            for user in target_accaunts:
-                self.session.logger.info(f"Now parsing username: {user}")
-                parsed = self.session.grab_followers(
-                    username=user,
-                    amount="full",
-                    live_match=False,
-                    store_locally=True)
-
-                # сохранить данные в PARSE/ user_followers.txt
-                followers_file_path = os.path.join(
-                    self.path_to_manager_folder + config.PARSE_FOLDER +
-                    "\\" + user + "_followers.txt")
-
-                if not os.path.exists(followers_file_path):
-                    with open(followers_file_path,
-                              'w', encoding='UTF-8') as f:
-                        for el in parsed:
-                            f.write(el + "\n")
-                else:
-                    # сравниваем списки
-                    followers_list = open(followers_file_path).readlines()
-                    difference = list(set(parsed) - set(followers_list))
-
-                    # сравним и добавим разницу в массив
-                    parsed_followers.append(difference)
-
-                    # добавить в manager в actual_interacted
-                    data = self._manager_get_data()
-
-                    data["actual_interacted"] = \
-                        sum(data["actual_interacted"].append(difference), [])
-
-                    self._manager_set_data(data)
-
-                    # обновить файл с подписками
-                    with open(followers_file_path,
-                              'w', encoding='UTF-8') as f:
-                        for el in parsed:
-                            f.write(el + "\n")
-
-            parsed_followers = sum(parsed_followers, [])
-
-            nl_actions = NoLoginActions()
-            filtered_followers = []
-
-            for user in parsed_followers:
-                ret = nl_actions.check_user(
-                    user,
-                    config.skip_bio_keyword,
-                    config.person_categories,
-                    False)
-
-                if ret is not None:
-                    filtered_followers.append(ret)
-
-                time.sleep(random.randint(3, 10))
-
-            self.session.logger.info(len(filtered_followers))
-            self.session.logger.info(filtered_followers)
-
-            # follow ()
-
-        return self
-
     def grab_user_followers(self, user):
         with smart_run(self.session, threaded=True):
             self.session.logger.info(f"Now parsing username: {user}")
@@ -616,7 +579,11 @@ class Actions:
 
     def follow_actual_users(self):
         with smart_run(self.session, threaded=True):
-            usernames = config.target_accounts
+            usernames = self._choose_accounts
+            if len(usernames) == 0:
+                print("Not enough accounts to work")
+                return
+            usernames = random.shuffle(usernames)
 
             for i in range(0, len(usernames)):
                 self.session.logger.info(
@@ -627,31 +594,21 @@ class Actions:
                     continue
 
                 # filter
-
                 filtered_followers = actual_followers
-                # nl_actions = NoLoginActions()
-                # filtered_followers = []
 
-                # for index,user in enumerate(actual_followers, start=1) :
-                #     ret = nl_actions.check_user(
-                #             user,
-                #             config.skip_bio_keyword,
-                #             config.person_categories,
-                #             False)
+                # remove already interacted
+                interacted = self._get_interacted_users()
+                for username in filtered_followers[:]:
+                    if username in interacted:
+                        filtered_followers.remove(username)
 
-                #     if ret is not None:
-                #         filtered_followers.append(ret)
-                    
-                #     self.session.logger.info(
-                #         f"[{index}/{len(actual_followers)}]"
-                #     )
+                    # remove by keyword in the nickname
+                    for skip_word in config.skip_name_keywords:
+                        if username.find(skip_word) != -1:
+                            filtered_followers.remove(username)
 
-                #     time.sleep(random.randint(4, 10))
-
-                # del nl_actions
-                # self.session.logger.info(
-                #     f"Length of filtered actual followers: {len(filtered_followers)}, [{i + 1}/{len(usernames)}]"
-                # )
+                # add to interacted
+                self._add_interacted_users(actual_followers)
 
                 # follow
                 self.session.logger.info(
@@ -667,7 +624,10 @@ class Actions:
                 self.session.logger.info(
                     f"~~ Now sleeping for a while, [{i + 1}/{len(usernames)}]"
                 )
-                time.sleep(random.randint(300, 600))
+                time.sleep(random.randint(600, 1000))
+    
+        return self
+
 
 if __name__ == "__main__":
 
