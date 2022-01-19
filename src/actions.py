@@ -94,13 +94,18 @@ class NoLoginActions:
         # --- SERVER CALL ---
         url = f'https://www.instagram.com/{username}/'
         headers = headers = config.request_headers
-        if self.proxy is not None:
-            r = requests.get(url, headers=headers, proxies=self.proxy)
-        else:
-            r = requests.get(url, headers=headers)
+        try:
+            if self.proxy is not None:
+                r = requests.get(url, headers=headers, proxies=self.proxy)
+            else:
+                r = requests.get(url, headers=headers)
 
-        soup = BeautifulSoup(r.text, 'lxml')
-        follows_name_posts = str(soup.find_all("meta")[13])
+            soup = BeautifulSoup(r.text, 'lxml')
+            follows_name_posts = str(soup.find_all("meta")[13])
+        
+        except Exception as ex:
+            print(ex)
+            return None
 
         bio_and_desc = str(soup.find_all("script"))
         bio_and_desc = bio_and_desc.encode("utf-16", "surrogatepass") \
@@ -517,7 +522,8 @@ class Actions:
 
         return set(accounts_to_parse)
 
-    def follow_actual_users(self):
+    # delete
+    def old_follow_actual_users(self):
         parsed_followers = []
         target_accaunts = self.choose_accounts()
         self.session.logger.info("Now parsing these accounts: " +
@@ -608,10 +614,60 @@ class Actions:
 
         return self
 
-    def just_open(self):
+    def follow_actual_users(self):
         with smart_run(self.session, threaded=True):
-            self.session.get_actual_followers()
-            input()
+            usernames = config.target_accounts
+
+            for i in range(0, len(usernames)):
+                self.session.logger.info(
+                    f"Now parsing actual followers from: {usernames[i]}, [{i + 1}/{len(usernames)}]"
+                )
+                actual_followers = self.session.get_actual_followers(usernames[i])
+                if not actual_followers:
+                    continue
+
+                # filter
+
+                filtered_followers = actual_followers
+                # nl_actions = NoLoginActions()
+                # filtered_followers = []
+
+                # for index,user in enumerate(actual_followers, start=1) :
+                #     ret = nl_actions.check_user(
+                #             user,
+                #             config.skip_bio_keyword,
+                #             config.person_categories,
+                #             False)
+
+                #     if ret is not None:
+                #         filtered_followers.append(ret)
+                    
+                #     self.session.logger.info(
+                #         f"[{index}/{len(actual_followers)}]"
+                #     )
+
+                #     time.sleep(random.randint(4, 10))
+
+                # del nl_actions
+                # self.session.logger.info(
+                #     f"Length of filtered actual followers: {len(filtered_followers)}, [{i + 1}/{len(usernames)}]"
+                # )
+
+                # follow
+                self.session.logger.info(
+                    f"Start follow actual followers of {usernames[i]}"
+                )
+                self.session.set_simulation(enabled=True, percentage=66)
+                self.session.set_do_story(enabled=True, percentage=100,
+                                          simulate=True)
+                self.session.set_do_like(True, percentage=55)
+                self.session.follow_by_list(filtered_followers, times=1,
+                                            sleep_delay=600, interact=True)
+
+                self.session.logger.info(
+                    f"~~ Now sleeping for a while, [{i + 1}/{len(usernames)}]"
+                )
+                time.sleep(random.randint(300, 600))
 
 if __name__ == "__main__":
 
@@ -634,7 +690,7 @@ if __name__ == "__main__":
     print("5) follow user followers")
     print("6) grab user followers")
     print("7) filter user followers")
-    print("8) just open")
+    print("8) follow actual users")
     action_numb = int(input("Choose an action: "))
 
     if action_numb == 1:
@@ -671,6 +727,6 @@ if __name__ == "__main__":
 
     if action_numb == 8:
         actions = Actions()
-        actions.just_open()
+        actions.follow_actual_users()
 
     del actions

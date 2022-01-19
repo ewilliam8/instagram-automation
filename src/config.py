@@ -77,7 +77,7 @@ skip_name_keywords = [
     "bizhyteriya", "massage", "dietolog", "hlopok", "news", "dress", "recepti",
     "tekstile", "_nails", "_studio", "uslugi", "center", "oriflame", "sale",
     "style", "mp3", "support", "sport", "podelki", "kuhni", "remont",
-    "komfort", "fincontrol", "insta", "boutique", "psycholog"]
+    "komfort", "fincontrol", "insta", "boutique", "psycholog", "teatr"]
 
 skip_bio_keyword = [
     "бесплатно", "доставка", "Бесплатно", "Доставка", "ДИРЕКТ", "директ",
@@ -113,7 +113,7 @@ skip_bio_keyword = [
     "ЗАКАЗАТЬ", "МОТИВАТОР", "франшиза", "Кератин", "кератин", "КЕРАТИН",
     "Целевая", "целевая", "аудитория", "создание", "Создание", "Сайт", "сайт",
     "Настольные игры", "настольные игры", "18+", "АСИКИ", "МАЙНЕРЫ", "майнеры",
-    "Майнеры", "Асики", "асики", "брокер"]
+    "Майнеры", "Асики", "асики", "брокер", "детские праздникик"]
 
 person_categories = [
     "Architectural Designer", "Artist", "Athlete", "Creators & Celebrities",

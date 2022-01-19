@@ -1,3 +1,5 @@
+import time
+
 def get_actual_user_followers(
     browser,
     user_name,
@@ -8,11 +10,8 @@ def get_actual_user_followers(
 
     :param browser: webdriver instance
     :param user_name: given username of account to follow
-    :param amount: the number of followers to follow
-    :param dont_include: ignore these usernames
-    :param follow_times:
     :param logger: the logger instance
-    :return: list of user's following
+    :return: list of actual user's following
     """
 
     usernames_index = 1
@@ -52,5 +51,13 @@ def get_actual_user_followers(
 
         find_names(usernames_index)
         usernames_index += 12
+
+    # remove duplicates
+    index = 1
+    while index < len(usernames):
+        if usernames[index] in usernames[ : index]:
+            usernames.pop(index)
+        else:
+            index += 1
 
     return usernames
