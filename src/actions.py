@@ -420,9 +420,7 @@ class Actions:
             with open(filtered_file, 'w', encoding='UTF-8') as F:
                 F.writelines(f)
 
-            with open(self.interacted_file, 'a', encoding='UTF-8') as f:
-                for el in target_followers:
-                    f.write(el + "\n")
+            self._add_interacted_users(target_followers)
 
             self.session.set_simulation(enabled=True, percentage=66)
             self.session.set_do_story(enabled=True, percentage=100,
@@ -638,7 +636,7 @@ if __name__ == "__main__":
     print("6) grab user followers")
     print("7) filter user followers")
     print("8) follow actual users")
-    print("9) just open")
+    print("9) just open - DEVELOPING")
     action_numb = int(input("Choose an action: "))
 
     if action_numb == 1:

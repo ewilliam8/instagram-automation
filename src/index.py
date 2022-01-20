@@ -2,6 +2,7 @@ import datetime
 import tkinter as tk
 from tkinter import ttk
 from tkinter.constants import DISABLED
+from tkinter import Tk, Canvas, Frame, BOTH, LAST
 
 if __name__ == "src.index":
     import src.actions as actions
@@ -14,6 +15,10 @@ if __name__ == "__main__":
 
 def gui_menu():
 
+    def working_day(event):
+        if 'disabled' in comboBox.state():
+            print("Can to work")
+
     win = tk.Tk()
     icon = tk.PhotoImage(file=config.ICON_PATH)
     BACKGROUND_COLOR = "#E8EFF1"
@@ -22,7 +27,7 @@ def gui_menu():
     win.config(bg=BACKGROUND_COLOR)
     win.iconphoto(False, icon)
     win.title(f"INSTAGRAM AUTOMATION v{config.PROGRAM_VERSION}")
-    win.geometry("350x400+200+100")
+    win.geometry("320x400+200+100")
     win.resizable(False, False)
 
     usernames = config.get_all_usernames()
@@ -55,6 +60,14 @@ def gui_menu():
         apply_btn = tk.Button(text="Применить",
                               command=lambda: comboBox.config(state=DISABLED))
         apply_btn.grid(column=1, row=1, padx=5)
+
+    c = Canvas(win, width=250, height=20, bg=BACKGROUND_COLOR, highlightthickness=0, relief='ridge')
+    c.grid(column=0, row=2, columnspan=2)
+    c.create_line(10, 10, 250, 10, dash=(4,2))
+    
+    work_btn = tk.Button(text="Рабочий день")
+    work_btn.grid(column=0, row=3, padx=5, sticky="w")
+    work_btn.bind('<Button-1>', working_day)
 
     win.mainloop()
 
@@ -163,5 +176,5 @@ def main():
 
 if __name__ == "__main__":
 
-    main()
-    # gui_menu()
+    # main()
+    gui_menu()

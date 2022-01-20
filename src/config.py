@@ -1,7 +1,7 @@
 from os import path
 import json
 
-PROGRAM_VERSION = '2.11'
+PROGRAM_VERSION = '2.12'
 
 FILTER_FOLDER = "FILTER\\"
 PARSE_FOLDER = "PARSE\\"
@@ -17,6 +17,7 @@ proxy_port = None
 proxy_login = None
 proxy_password = None
 target_accounts = None
+path_to_manager_folder = None
 
 request_headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' +
                    'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664' +
@@ -24,10 +25,6 @@ request_headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' +
 
 here = path.abspath(path.dirname(__file__))
 accounts_file_path = path.join(here + "\\" + ACCOUNTS_FILE)
-path_to_manager_folder = path.join(
-        here + "\\" + "manager" + "\\" +
-        insta_username + "\\"
-    )
 
 BASE_DIR = path.join(path.dirname(__file__), '..')
 ICON_PATH = path.join(BASE_DIR + "\\img\\icon.png")
@@ -54,6 +51,7 @@ def set_account_variables(account_number: int):
     global proxy_login
     global proxy_password
     global target_accounts
+    global path_to_manager_folder
 
     insta_username = DATA[account_number]["INSTA_USERNAME"]
     insta_password = DATA[account_number]["INSTA_PASSWORD"]
@@ -63,6 +61,10 @@ def set_account_variables(account_number: int):
     proxy_login = DATA[account_number]["PROXY_LOGIN"]
     proxy_password = DATA[account_number]["PROXY_PASSWORD"]
     target_accounts = DATA[account_number]["TARGET_ACCOUNTS"]
+    path_to_manager_folder = path.join(
+        here + "\\" + "manager" + "\\" +
+        insta_username + "\\"
+    )
 
 
 exclude_accaunts = []
