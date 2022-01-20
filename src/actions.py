@@ -376,6 +376,19 @@ class Actions:
                   "w", encoding='UTF-8') as file_manager:
             json.dump(new_data, file_manager, indent=4)
     
+    def _get_interacted_users(self):
+        interacted_users = open(self.interacted_file,
+            'r', encoding='UTF-8').readlines()
+        for index, elem in enumerate(interacted_users, start=0):
+            interacted_users[index] = elem[:-1]
+
+        return interacted_users
+
+    def _add_interacted_users(self, new_data):
+        with open(self.interacted_file, 'a', encoding='UTF-8') as f:
+            for el in new_data:
+                f.write(el + "\n")
+
     def interact_by_feed(self, amount_interact: int = 40):
         with smart_run(self.session, threaded=True):
             self.session.set_do_story(
@@ -617,6 +630,7 @@ class Actions:
     def follow_actual_users(self):
         with smart_run(self.session, threaded=True):
             usernames = config.target_accounts
+            usernames = random.shuffle(usernames)
 
             for i in range(0, len(usernames)):
                 self.session.logger.info(
