@@ -45,7 +45,7 @@ def get_actual_user_followers(
     find_names(usernames_index)
     usernames_index += 12
 
-    for __ in range(0, 5):
+    for _ in range(0, 5):
         browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(random.randint(3, 6))
 
