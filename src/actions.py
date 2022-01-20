@@ -611,6 +611,10 @@ class Actions:
     
         return self
 
+    def just_open(self):
+        with smart_run(self.session, threaded=True):
+            input("Press any bottom to exit the program")
+
 
 if __name__ == "__main__":
 
@@ -634,6 +638,7 @@ if __name__ == "__main__":
     print("6) grab user followers")
     print("7) filter user followers")
     print("8) follow actual users")
+    print("9) just open")
     action_numb = int(input("Choose an action: "))
 
     if action_numb == 1:
@@ -671,5 +676,9 @@ if __name__ == "__main__":
     if action_numb == 8:
         actions = Actions()
         actions.follow_actual_users()
+
+    if action_numb == 9:
+        actions = Actions()
+        actions.just_open()
 
     del actions
