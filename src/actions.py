@@ -560,11 +560,11 @@ class Actions:
 
     def follow_actual_users(self):
         with smart_run(self.session, threaded=True):
-            usernames = self._choose_accounts
+            usernames = config.target_accounts
             if len(usernames) == 0:
                 print("Not enough accounts to work")
                 return
-            usernames = random.shuffle(usernames)
+            random.shuffle(usernames)
 
             for i in range(0, len(usernames)):
                 self.session.logger.info(
@@ -613,6 +613,7 @@ class Actions:
         with smart_run(self.session, threaded=True):
             input("Press any bottom to exit the program")
 
+# unfollow day
 
 if __name__ == "__main__":
 

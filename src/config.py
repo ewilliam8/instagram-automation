@@ -83,7 +83,8 @@ skip_name_keywords = [
     "bizhyteriya", "massage", "dietolog", "hlopok", "news", "dress", "recepti",
     "tekstile", "_nails", "_studio", "uslugi", "center", "oriflame", "sale",
     "style", "mp3", "support", "sport", "podelki", "kuhni", "remont",
-    "komfort", "fincontrol", "insta", "boutique", "psycholog", "teatr"]
+    "komfort", "fincontrol", "insta", "boutique", "psycholog", "teatr",
+    "vigvam"]
 
 skip_bio_keyword = [
     "бесплатно", "доставка", "Бесплатно", "Доставка", "ДИРЕКТ", "директ",
