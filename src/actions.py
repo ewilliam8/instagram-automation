@@ -446,7 +446,7 @@ class Actions:
 
         return self
 
-    def unfollow(self, amount_unf: int = 60):
+    def unfollow(self, amount_unf: int = 65):
         with smart_run(self.session, threaded=True):
             self.session.unfollow_users(
                 amount=amount_unf,
@@ -456,6 +456,20 @@ class Actions:
                 sleep_delay=450)
 
         return self
+
+    def unfollow_day(self):
+        unfollow_times = 2
+        for i in range(0, unfollow_times):
+            self.unfollow()
+
+            sleep_time = random.randint(1*60*60, 2*60*60)
+            self.session.logger.info(
+                f"\n Unfollowing [{i+1}/{unfollow_times}]"
+            )
+            self.session.logger.info(
+                f"~~ Now sleeping for {round(sleep_time / 3600, 1)} hours"
+            )
+            time.sleep(sleep_time)
 
     # rewrite
     def _choose_accounts(self):
@@ -537,6 +551,11 @@ class Actions:
         self._manager_set_data(data_m)
 
         return set(accounts_to_parse)
+
+    def messaging(self):
+        with smart_run(self.session, threaded=True):
+            # instapy message
+            pass
 
     def grab_user_followers(self, user):
         with smart_run(self.session, threaded=True):
@@ -647,7 +666,7 @@ if __name__ == "__main__":
 
     if action_numb == 2:
         actions = Actions()
-        actions.unfollow(65)
+        actions.unfollow_day()
 
     if action_numb == 3:
         actions = Actions()
